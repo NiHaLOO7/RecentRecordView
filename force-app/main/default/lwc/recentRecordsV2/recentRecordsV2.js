@@ -17,7 +17,6 @@ export default class RecentRecordsV2  extends NavigationMixin (
     @track fields = [];
 
     recentRecordWire = false;
-    wiredNoError = true;
     errorMessage;
     defaultFields;
     objectName;
@@ -92,7 +91,6 @@ export default class RecentRecordsV2  extends NavigationMixin (
         } else if (error) {
             this.isAdmin = false;
             this.handleError(error);
-            this.wiredNoError = false;
         }
     }
 
@@ -104,7 +102,6 @@ export default class RecentRecordsV2  extends NavigationMixin (
             this.handleSuccess();
         } else if (error) {
             this.handleError(error);
-            this.wiredNoError = false;
         }
     }
 
@@ -151,7 +148,6 @@ export default class RecentRecordsV2  extends NavigationMixin (
             
         } else if (error) {
             this.handleError(error);
-            this.wiredNoError = false;
         }
     }
 

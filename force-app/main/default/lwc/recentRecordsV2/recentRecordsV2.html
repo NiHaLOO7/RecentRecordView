@@ -8,7 +8,6 @@
 <template>
     <div if:true={errorMessage} class="slds-m-bottom_small"><c-error-banner message={errorMessage}></c-error-banner></div>
     <lightning-card title="Recent Record Viewer">
-        <div lwc:if={wiredNoError}>
         <div class="slds-m-horizontal_medium">
             <div class="slds-grid slds-col">
                 <div class="slds-col slds-grid_vertical slds-gutters">
@@ -66,9 +65,5 @@
                 </div>
             </template>
         </div>
-    </div>
-    <div lwc:else>
-<div class="slds-text-color_error">Error Occured</div>
-    </div>
     </lightning-card>  
 </template>
