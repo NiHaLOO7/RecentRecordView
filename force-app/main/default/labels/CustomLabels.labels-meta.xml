@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>RR_GetRecentRecords_Query_Template</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>GetRecentRecords Query Template</shortDescription>
+        <value>SELECT {0} FROM {1} {2} LIMIT :numberOfRecords</value>
+    </labels>
+    <labels>
+        <fullName>RR_Invalid_Parameters_Error_Msg</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Invalid Parameters Error Msg</shortDescription>
+        <value>Invalid arguments. Please provide all the parameters</value>
+    </labels>
+    <labels>
+        <fullName>RR_No_Of_Record_Error_Msg</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>No Of Record Error Msg</shortDescription>
+        <value>Number of records should not be smaller than 1</value>
+    </labels>
+    <labels>
+        <fullName>RR_Object_Security_Error_Msg</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Object Security Error Msg</shortDescription>
+        <value>The object {0} is not accessible or queryable.</value>
+    </labels>
+    <labels>
+        <fullName>RR_Order_By_CreatedDate</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Order By CreatedDate</shortDescription>
+        <value>ORDER BY CreatedDate DESC</value>
+    </labels>
+    <labels>
+        <fullName>RR_Order_By_LastModifiedDate</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Order By LastModifiedDate</shortDescription>
+        <value>ORDER BY LastModifiedDate DESC</value>
+    </labels>
+    <labels>
+        <fullName>RR_System_Administrator</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>System Administrator</shortDescription>
+        <value>System Administrator</value>
+    </labels>
+    <labels>
+        <fullName>RR_createddate</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>createddate</shortDescription>
+        <value>createddate</value>
+    </labels>
+    <labels>
+        <fullName>RR_lastmodifieddate</fullName>
+        <categories>Recent Records</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lastmodifieddate</shortDescription>
+        <value>lastmodifieddate</value>
+    </labels>
+</CustomLabels>

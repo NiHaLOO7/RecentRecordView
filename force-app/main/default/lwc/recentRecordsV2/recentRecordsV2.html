@@ -1,0 +1,74 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 04-12-2024
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <div if:true={errorMessage} class="slds-m-bottom_small"><c-error-banner message={errorMessage}></c-error-banner></div>
+    <lightning-card title="Recent Record Viewer">
+        <div lwc:if={wiredNoError}>
+        <div class="slds-m-horizontal_medium">
+            <div class="slds-grid slds-col">
+                <div class="slds-col slds-grid_vertical slds-gutters">
+                    <div class="slds-col slds-p-top_medium slds-p-left_medium">
+                        <lightning-combobox class="slds-size_medium" name="objectSelector" label="Select an Object"
+                        options={objectOptions} value={objectName} onchange={handleObjectChange}></lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-p-top_medium slds-p-left_medium">
+                        <lightning-input class="slds-size_medium recordsPerPage" type="number" label="Number of Records Per Page" value={pageSize}
+                        onchange={handlePaginationSize}></lightning-input>
+                    </div>
+                </div>
+                <div class="slds-col slds-grid_vertical slds-gutters">
+                    <div class="slds-col slds-p-top_medium slds-p-left_medium">
+                        <lightning-input class="slds-size_medium recordLimit" type="number" label="Number of Records" value={recordLimit}
+                        onchange={handleLimitChange}></lightning-input>
+                    </div>
+                    <div if:true={showFieldSelector} class="slds-col slds-p-top_large slds-m-top_medium">
+                        <lightning-button variant="neutral" class="changeFields" icon-name="utility:add" label="Change Fields" onclick={handleChangeFields}></lightning-button>
+                    </div>
+                </div>
+            </div>
+            <template lwc:if={objectName}>
+                <div class="slds-clearfix slds-m-top_small" lwc:if={showTable}>
+                    <lightning-datatable 
+                        data={paginatedRecords} 
+                        columns={columns} 
+                        hide-checkbox-column
+                        class="slds-scrollable_x"
+                        onrowaction={handleRowAction}
+                        key-field="Id">
+                    </lightning-datatable>
+                    <div class="slds-m-around_medium slds-float_right">
+                        <lightning-button 
+                            label="Previous"
+                            onclick={handlePrevious}
+                            class="prev"
+                            disabled={prevDisableCondition}>
+                        </lightning-button>
+                        <span class="slds-p-horizontal_small pages">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <lightning-button 
+                            label="Next"
+                            onclick={handleNext}
+                            class="next"
+                            disabled={nextDisableCondition}>
+                        </lightning-button>
+                    </div>
+                </div>
+                <div lwc:elseif={showNoData}>
+                    <div class="slds-align_absolute-center slds-text-title_bold slds-p-vertical_large slds-text-color_destructive">
+                        No data available in this Object.
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <div lwc:else>
+<div class="slds-text-color_error">Error Occured</div>
+    </div>
+    </lightning-card>  
+</template>

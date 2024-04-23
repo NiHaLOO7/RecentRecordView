@@ -1,0 +1,67 @@
+<template>
+    <!-- <lightning-card> -->
+
+    <lightning-modal-header label="Select Columns"></lightning-modal-header>
+    <lightning-modal-body>
+        <div class="slds-scrollable_x slds-box">
+            <div class="selectWrapper slds-m-around_small slds-grid_vertical">
+                <div class="slds-col slds-gutters">
+                    <lightning-layout class="selectTableRow">
+                        <lightning-layout-item for:each={columns} for:item="col" for:index="colIndex" key={col}
+                            class="slds-m-left_small">
+                            <select id={colIndex} name="FieldTreeSelect0" size="9" title="Insert Field"
+                                style="display: inline; width: 10rem;">
+                                <option for:each={col.columns} data-related={c.isRelated} data-id={colIndex}
+                                    data-label={c.label} onclick={handleOptionChange} for:item="c" key={c.value}
+                                    value={c.value}>{c.label}<template if:true={c.isRelated}> ({c.value})
+                                        &gt;</template></option>
+                            </select>
+                        </lightning-layout-item>
+                        <lightning-layout-item if:true={showInsertButton} style="background-color: #fafafa"
+                            class="insertBox slds-box slds-text-align_center slds-m-left_small">
+                            <div class="slds-p-top_x-small">
+                                <span id="insertWrapperInfo3" style="display: block; "
+                                    class="insertWrapperInfo slds-text-align_center">You have selected:</span><span
+                                    id="insertWrapperString3"
+                                    class="insertWrapperString slds-text-align_center slds-m-bottom_xx-small"
+                                    style="display: block;"><b>{selectedCol}</b></span>
+                                <div id="insertWrapperAttributes4" class="insertWrapperAttributes">
+                                    <table class="fieldPickerAttributeTable">
+                                        <tbody>
+                                            <tr>
+                                                <td
+                                                    class="fieldPickerAttributeCategory slds-text-align_center slds-text-color_weak slds-m-bottom_x-small">
+                                                    API Name: {selectedCol}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="insertWrapperButton4" class="insertWrapperButton slds-m-top_small"><input
+                                        type="button" id="fieldInsertButton" name="insertButton"
+                                        onclick={handleInsertClick} class="inputBtn" value="Insert"></div>
+                                <div class="slds-m-right_small"></div>
+                            </div>
+
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                <div class="slds-col">
+                    <div class="slds-box slds-m-top_small" style="width: auto;">
+                        <lightning-pill-container items={selectedColumnsPills}
+                            onitemremove={handleItemRemove}></lightning-pill-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button class="close" label="Close" onclick={handleCancel}></lightning-button>
+        <lightning-button class="save" label="Save" variant="brand" onclick={handleSave}></lightning-button>
+    </lightning-modal-footer>
+
+
+
+    <!-- </lightning-card> -->
+
+    <!-- <div><b>{selectedCol}</b></div> -->
+</template>

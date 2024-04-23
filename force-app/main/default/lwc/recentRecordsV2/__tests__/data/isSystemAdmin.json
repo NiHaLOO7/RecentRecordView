@@ -1,0 +1,9 @@
+{
+    "trueResponse" : {
+        "isAdmin" : true
+    },
+    "falseResponse" : {
+        "isAdmin" : false
+    }
+
+}

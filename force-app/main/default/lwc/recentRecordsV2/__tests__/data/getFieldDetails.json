@@ -1,0 +1,56 @@
+{"allData" : [
+    {
+        "label": "lastmodifieddate",
+        "value": "lastmodifiedby",
+        "isRelated": false
+    },
+    {
+        "label": "createdbyid",
+        "value": "createdbyid",
+        "isRelated": false
+    },
+    {
+        "label": "CreatedBy",
+        "value": "CreatedBy",
+        "isRelated": false
+    },
+    {
+        "label": "createddate",
+        "value": "createddate",
+        "isRelated": false 
+    },
+    {
+        "label": "name",
+        "value": "name",
+        "isRelated": false 
+    },
+    {
+        "label": "id",
+        "value": "id",
+        "isRelated": false 
+    } 
+],
+"partialData" : [
+    {
+        "label": "lastmodifieddate",
+        "value": "lastmodifiedby",
+        "isRelated": false 
+    },
+    {
+        "label": "createdbyid",
+        "value": "createdbyid",
+        "isRelated": false 
+    },
+    {
+        "label": "createddate",
+        "value": "createddate",
+        "isRelated": false 
+    },
+    {
+        "label": "id",
+        "value": "id",
+        "isRelated": false 
+    } 
+]
+
+}

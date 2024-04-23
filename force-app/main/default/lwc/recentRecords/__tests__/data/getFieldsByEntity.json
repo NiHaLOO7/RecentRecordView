@@ -1,0 +1,42 @@
+{"allData" : [
+    {
+        "label": "lastmodifieddate",
+        "value": "lastmodifiedby" 
+    },
+    {
+        "label": "createdbyid",
+        "value": "createdbyid" 
+    },
+    {
+        "label": "createddate",
+        "value": "createddate" 
+    },
+    {
+        "label": "name",
+        "value": "name" 
+    },
+    {
+        "label": "id",
+        "value": "id" 
+    } 
+],
+"partialData" : [
+    {
+        "label": "lastmodifieddate",
+        "value": "lastmodifiedby" 
+    },
+    {
+        "label": "createdbyid",
+        "value": "createdbyid" 
+    },
+    {
+        "label": "createddate",
+        "value": "createddate" 
+    },
+    {
+        "label": "id",
+        "value": "id" 
+    } 
+]
+
+}

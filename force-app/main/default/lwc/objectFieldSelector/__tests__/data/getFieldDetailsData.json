@@ -1,0 +1,732 @@
+{
+    "data1": [
+        {
+            "isRelated": false,
+            "label": "Account ID",
+            "value": "id"
+        },
+        {
+            "isRelated": false,
+            "label": "Deleted",
+            "value": "isdeleted"
+        },
+        {
+            "isRelated": true,
+            "label": "Account",
+            "value": "MasterRecord"
+        },
+        {
+            "isRelated": true,
+            "label": "User",
+            "value": "Owner"
+        },
+        {
+            "isRelated": false,
+            "label": "Owner ID",
+            "value": "ownerid"
+        },
+        {
+            "isRelated": false,
+            "label": "Master Record ID",
+            "value": "masterrecordid"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Name",
+            "value": "name"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Type",
+            "value": "type"
+        },
+        {
+            "isRelated": true,
+            "label": "Account",
+            "value": "Parent"
+        },
+        {
+            "isRelated": false,
+            "label": "Parent Account ID",
+            "value": "parentid"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing Street",
+            "value": "billingstreet"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing City",
+            "value": "billingcity"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing State/Province",
+            "value": "billingstate"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing Zip/Postal Code",
+            "value": "billingpostalcode"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing Country",
+            "value": "billingcountry"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing Latitude",
+            "value": "billinglatitude"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing Longitude",
+            "value": "billinglongitude"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing Geocode Accuracy",
+            "value": "billinggeocodeaccuracy"
+        },
+        {
+            "isRelated": false,
+            "label": "Billing Address",
+            "value": "billingaddress"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping Street",
+            "value": "shippingstreet"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping City",
+            "value": "shippingcity"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping State/Province",
+            "value": "shippingstate"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping Zip/Postal Code",
+            "value": "shippingpostalcode"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping Country",
+            "value": "shippingcountry"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping Latitude",
+            "value": "shippinglatitude"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping Longitude",
+            "value": "shippinglongitude"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping Geocode Accuracy",
+            "value": "shippinggeocodeaccuracy"
+        },
+        {
+            "isRelated": false,
+            "label": "Shipping Address",
+            "value": "shippingaddress"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Phone",
+            "value": "phone"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Fax",
+            "value": "fax"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Number",
+            "value": "accountnumber"
+        },
+        {
+            "isRelated": false,
+            "label": "Website",
+            "value": "website"
+        },
+        {
+            "isRelated": false,
+            "label": "Photo URL",
+            "value": "photourl"
+        },
+        {
+            "isRelated": false,
+            "label": "SIC Code",
+            "value": "sic"
+        },
+        {
+            "isRelated": false,
+            "label": "Industry",
+            "value": "industry"
+        },
+        {
+            "isRelated": false,
+            "label": "Annual Revenue",
+            "value": "annualrevenue"
+        },
+        {
+            "isRelated": false,
+            "label": "Employees",
+            "value": "numberofemployees"
+        },
+        {
+            "isRelated": false,
+            "label": "Ownership",
+            "value": "ownership"
+        },
+        {
+            "isRelated": false,
+            "label": "Ticker Symbol",
+            "value": "tickersymbol"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Description",
+            "value": "description"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Rating",
+            "value": "rating"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Site",
+            "value": "site"
+        },
+        {
+            "isRelated": false,
+            "label": "Created Date",
+            "value": "createddate"
+        },
+        {
+            "isRelated": true,
+            "label": "User",
+            "value": "CreatedBy"
+        },
+        {
+            "isRelated": false,
+            "label": "Created By ID",
+            "value": "createdbyid"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Modified Date",
+            "value": "lastmodifieddate"
+        },
+        {
+            "isRelated": true,
+            "label": "User",
+            "value": "LastModifiedBy"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Modified By ID",
+            "value": "lastmodifiedbyid"
+        },
+        {
+            "isRelated": false,
+            "label": "System Modstamp",
+            "value": "systemmodstamp"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Activity",
+            "value": "lastactivitydate"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Viewed Date",
+            "value": "lastvieweddate"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Referenced Date",
+            "value": "lastreferenceddate"
+        },
+        {
+            "isRelated": false,
+            "label": "Data.com Key",
+            "value": "jigsaw"
+        },
+        {
+            "isRelated": false,
+            "label": "Jigsaw Company ID",
+            "value": "jigsawcompanyid"
+        },
+        {
+            "isRelated": false,
+            "label": "Clean Status",
+            "value": "cleanstatus"
+        },
+        {
+            "isRelated": false,
+            "label": "Account Source",
+            "value": "accountsource"
+        },
+        {
+            "isRelated": false,
+            "label": "D-U-N-S Number",
+            "value": "dunsnumber"
+        },
+        {
+            "isRelated": false,
+            "label": "Tradestyle",
+            "value": "tradestyle"
+        },
+        {
+            "isRelated": false,
+            "label": "NAICS Code",
+            "value": "naicscode"
+        },
+        {
+            "isRelated": false,
+            "label": "NAICS Description",
+            "value": "naicsdesc"
+        },
+        {
+            "isRelated": false,
+            "label": "Year Started",
+            "value": "yearstarted"
+        },
+        {
+            "isRelated": false,
+            "label": "SIC Description",
+            "value": "sicdesc"
+        },
+        {
+            "isRelated": true,
+            "label": "DandBCompany",
+            "value": "DandbCompany"
+        },
+        {
+            "isRelated": false,
+            "label": "D&B Company ID",
+            "value": "dandbcompanyid"
+        },
+        {
+            "isRelated": false,
+            "label": "Einstein Account Tier",
+            "value": "tier"
+        },
+        {
+            "isRelated": false,
+            "label": "Customer Priority",
+            "value": "customerpriority__c"
+        },
+        {
+            "isRelated": false,
+            "label": "SLA",
+            "value": "sla__c"
+        },
+        {
+            "isRelated": false,
+            "label": "Active",
+            "value": "active__c"
+        },
+        {
+            "isRelated": false,
+            "label": "Number of Locations",
+            "value": "numberoflocations__c"
+        },
+        {
+            "isRelated": false,
+            "label": "Upsell Opportunity",
+            "value": "upsellopportunity__c"
+        },
+        {
+            "isRelated": false,
+            "label": "SLA Serial Number",
+            "value": "slaserialnumber__c"
+        },
+        {
+            "isRelated": false,
+            "label": "SLA Expiration Date",
+            "value": "slaexpirationdate__c"
+        },
+        {
+            "isRelated": true,
+            "label": "Contact",
+            "value": "Client_Contact__r"
+        },
+        {
+            "isRelated": false,
+            "label": "Client Contact",
+            "value": "client_contact__c"
+        }
+    ],
+    "data2": [
+        {
+            "isRelated": false,
+            "label": "User ID",
+            "value": "id"
+        },
+        {
+            "isRelated": false,
+            "label": "Username",
+            "value": "username"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Name",
+            "value": "lastname"
+        },
+        {
+            "isRelated": false,
+            "label": "First Name",
+            "value": "firstname"
+        },
+        {
+            "isRelated": false,
+            "label": "Full Name",
+            "value": "name"
+        },
+        {
+            "isRelated": false,
+            "label": "Company Name",
+            "value": "companyname"
+        },
+        {
+            "isRelated": false,
+            "label": "Division",
+            "value": "division"
+        },
+        {
+            "isRelated": false,
+            "label": "Department",
+            "value": "department"
+        },
+        {
+            "isRelated": false,
+            "label": "Title",
+            "value": "title"
+        },
+        {
+            "isRelated": false,
+            "label": "Street",
+            "value": "street"
+        },
+        {
+            "isRelated": false,
+            "label": "City",
+            "value": "city"
+        },
+        {
+            "isRelated": false,
+            "label": "State/Province",
+            "value": "state"
+        },
+        {
+            "isRelated": false,
+            "label": "Zip/Postal Code",
+            "value": "postalcode"
+        },
+        {
+            "isRelated": false,
+            "label": "Country",
+            "value": "country"
+        },
+        {
+            "isRelated": false,
+            "label": "Latitude",
+            "value": "latitude"
+        },
+        {
+            "isRelated": false,
+            "label": "Longitude",
+            "value": "longitude"
+        },
+        {
+            "isRelated": false,
+            "label": "Geocode Accuracy",
+            "value": "geocodeaccuracy"
+        },
+        {
+            "isRelated": false,
+            "label": "Address",
+            "value": "address"
+        },
+        {
+            "isRelated": false,
+            "label": "Email",
+            "value": "email"
+        },
+        {
+            "isRelated": false,
+            "label": "AutoBcc",
+            "value": "emailpreferencesautobcc"
+        },
+        {
+            "isRelated": false,
+            "label": "AutoBccStayInTouch",
+            "value": "emailpreferencesautobccstayintouch"
+        },
+        {
+            "isRelated": false,
+            "label": "StayInTouchReminder",
+            "value": "emailpreferencesstayintouchreminder"
+        },
+        {
+            "isRelated": false,
+            "label": "Email Sender Address",
+            "value": "senderemail"
+        },
+        {
+            "isRelated": false,
+            "label": "Email Sender Name",
+            "value": "sendername"
+        },
+        {
+            "isRelated": false,
+            "label": "Email Signature",
+            "value": "signature"
+        },
+        {
+            "isRelated": false,
+            "label": "Stay-in-Touch Email Subject",
+            "value": "stayintouchsubject"
+        },
+        {
+            "isRelated": false,
+            "label": "Stay-in-Touch Email Signature",
+            "value": "stayintouchsignature"
+        },
+        {
+            "isRelated": false,
+            "label": "Stay-in-Touch Email Note",
+            "value": "stayintouchnote"
+        },
+        {
+            "isRelated": false,
+            "label": "Phone",
+            "value": "phone"
+        },
+        {
+            "isRelated": false,
+            "label": "Fax",
+            "value": "fax"
+        },
+        {
+            "isRelated": false,
+            "label": "Mobile",
+            "value": "mobilephone"
+        },
+        {
+            "isRelated": false,
+            "label": "Alias",
+            "value": "alias"
+        },
+        {
+            "isRelated": false,
+            "label": "Nickname",
+            "value": "communitynickname"
+        },
+        {
+            "isRelated": false,
+            "label": "User Photo badge text overlay",
+            "value": "badgetext"
+        },
+        {
+            "isRelated": false,
+            "label": "Active",
+            "value": "isactive"
+        },
+        {
+            "isRelated": false,
+            "label": "Time Zone",
+            "value": "timezonesidkey"
+        },
+        {
+            "isRelated": true,
+            "label": "UserRole",
+            "value": "UserRole"
+        },
+        {
+            "isRelated": false,
+            "label": "Role ID",
+            "value": "userroleid"
+        },
+        {
+            "isRelated": false,
+            "label": "Locale",
+            "value": "localesidkey"
+        },
+        {
+            "isRelated": false,
+            "label": "Info Emails",
+            "value": "receivesinfoemails"
+        },
+        {
+            "isRelated": false,
+            "label": "Admin Info Emails",
+            "value": "receivesadmininfoemails"
+        },
+        {
+            "isRelated": false,
+            "label": "Email Encoding",
+            "value": "emailencodingkey"
+        },
+        {
+            "isRelated": true,
+            "label": "Profile",
+            "value": "Profile"
+        },
+        {
+            "isRelated": false,
+            "label": "Profile ID",
+            "value": "profileid"
+        },
+        {
+            "isRelated": false,
+            "label": "User Type",
+            "value": "usertype"
+        },
+        {
+            "isRelated": false,
+            "label": "Language",
+            "value": "languagelocalekey"
+        },
+        {
+            "isRelated": false,
+            "label": "Employee Number",
+            "value": "employeenumber"
+        },
+        {
+            "isRelated": false,
+            "label": "Delegated Approver ID",
+            "value": "delegatedapproverid"
+        },
+        {
+            "isRelated": true,
+            "label": "User",
+            "value": "Manager"
+        },
+        {
+            "isRelated": false,
+            "label": "Manager ID",
+            "value": "managerid"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Login",
+            "value": "lastlogindate"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Password Change or Reset",
+            "value": "lastpasswordchangedate"
+        },
+        {
+            "isRelated": false,
+            "label": "Created Date",
+            "value": "createddate"
+        },
+        {
+            "isRelated": true,
+            "label": "User",
+            "value": "CreatedBy"
+        },
+        {
+            "isRelated": false,
+            "label": "Created By ID",
+            "value": "createdbyid"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Modified Date",
+            "value": "lastmodifieddate"
+        },
+        {
+            "isRelated": true,
+            "label": "User",
+            "value": "LastModifiedBy"
+        },
+        {
+            "isRelated": false,
+            "label": "Last Modified By ID",
+            "value": "lastmodifiedbyid"
+        },
+        {
+            "isRelated": false,
+            "label": "System Modstamp",
+            "value": "systemmodstamp"
+        },
+        {
+            "isRelated": false,
+            "label": "Failed Login Attempts",
+            "value": "numberoffailedlogins"
+        },
+        {
+            "isRelated": false,
+            "label": "Offline Edition Trial Expiration Date",
+            "value": "offlinetrialexpirationdate"
+        },
+        {
+            "isRelated": false,
+            "label": "Sales Anywhere Trial Expiration Date",
+            "value": "offlinepdatrialexpirationdate"
+        },
+        {
+            "isRelated": false,
+            "label": "Marketing User",
+            "value": "userpermissionsmarketinguser"
+        },
+        {
+            "isRelated": false,
+            "label": "Offline User",
+            "value": "userpermissionsofflineuser"
+        },
+        {
+            "isRelated": false,
+            "label": "Auto-login To Call Center",
+            "value": "userpermissionscallcenterautologin"
+        },
+        {
+            "isRelated": false,
+            "label": "Salesforce CRM Content User",
+            "value": "userpermissionssfcontentuser"
+        },
+        {
+            "isRelated": false,
+            "label": "Knowledge User",
+            "value": "userpermissionsknowledgeuser"
+        },
+        {
+            "isRelated": false,
+            "label": "Flow User",
+            "value": "userpermissionsinteractionuser"
+        },
+        {
+            "isRelated": false,
+            "label": "Service Cloud User",
+            "value": "userpermissionssupportuser"
+        },
+        {
+            "isRelated": false,
+            "label": "Data.com User",
+            "value": "userpermissionsjigsawprospectinguser"
+        },
+        {
+            "isRelated": false,
+            "label": "Site.com Contributor User",
+            "value": "userpermissionssiteforcecontributoruser"
+        }
+    ],
+    "noData": []
+}

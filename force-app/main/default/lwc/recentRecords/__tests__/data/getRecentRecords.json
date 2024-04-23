@@ -1,0 +1,65 @@
+{
+    "adminData": [
+       {
+        "record":{
+            "createdbyid": "testid1",
+            "createddate": "2024-04-14T08:29:02.000Z",
+            "name": "Test1",
+            "Id": "testaccid1"
+        },
+        "canEdit": true
+       },
+       {
+        "record":{
+            "createdbyid": "testid2",
+            "createddate": "2024-04-14T07:29:02.000Z",
+            "name": "Test2",
+            "Id": "testaccid2"
+        },
+        "canEdit": true
+       } 
+    ],
+    "standardUserData": [
+        {
+         "record":{
+             "createdbyid": "testid1",
+             "createddate": "2024-04-14T08:29:02.000Z",
+             "name": "Test1",
+             "Id": "testaccid1"
+         },
+         "canEdit": true
+        },
+        {
+         "record":{
+             "createdbyid": "testid2",
+             "createddate": "2024-04-14T07:29:02.000Z",
+             "name": "Test2",
+             "Id": "testaccid2"
+         },
+         "canEdit": false
+        } 
+     ],
+     "dataWithLastModified": [
+        {
+         "record":{
+             "createdbyid": "testid1",
+             "createddate": "2024-04-14T08:29:02.000Z",
+             "name": "Test1",
+             "Id": "testaccid1"
+         },
+         "canEdit": true
+        },
+        {
+         "record":{
+             "createdbyid": "testid2",
+             "createddate": "2024-04-14T07:29:02.000Z",
+             "name": "Test2",
+             "Id": "testaccid2",
+             "lastmodifieddate": "2024-04-14T07:29:02.000Z"
+         },
+         "canEdit": false
+        } 
+     ],
+     "emptyRecord": []
+
+}
