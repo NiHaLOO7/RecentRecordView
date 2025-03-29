@@ -1,191 +1,165 @@
-import {LightningElement, api, track} from "lwc";
+import { LightningElement, api, track } from "lwc";
 
 export default class InputWithDropDown extends LightningElement {
-	isOpen = false;
-	highlightCounter = null;
-	_value = "";
-	hasInteracted = false;
+    @api messageWhenInvalid = "Please type or select a value";
+    @api required = false;
+    @api label = "Subject";
 
-	@api messageWhenInvalid = "Please type or select a value";
-	@api required = false;
-	@api
-	get value() {
-		return this._value;
-	}
+    @track _options = [];
 
-	set value(val) {
-		this._value = val;
-	}
+    _value = "";
+    isOpen = false;
+    highlightCounter = null;
+    hasInteracted = false;
+    _inputHasFocus = false;
+    _cancelBlur = false;
 
-	@api label = "Subject";
+    /*** GETTERS & SETTERS ***/
+    @api get value() {
+        return this._value;
+    }
 
-	@track _options = [];
+    set value(val) {
+        this._value = val;
+    }
 
-	@api
-	get options() {
-		return this._options;
-	}
+    @api get options() {
+        return this._options;
+    }
 
-	set options(val) {
-		this._options = val || [];
-	}
+    set options(val) {
+        this._options = val || [];
+    }
 
-	get tempOptions() {
-		let options = this.options;
-		if (this.value) {
-			options = this.options.filter((op) => op.label.toLowerCase().includes(this.value.toLowerCase()));
-		}
-		return this.highLightOption(options);
-	}
+    get tempOptions() {
+        let options = this._value
+            ? this._options.filter((op) =>
+                  op.label.toLowerCase().includes(this._value.toLowerCase())
+              )
+            : this._options;
 
-	get isInvalid() {
-		return this.required && this.hasInteracted && !this.value;
-	}
+        return this.highlightOptions(options);
+    }
 
-	get formElementClasses() {
-		let classes = "slds-form-element";
-		if (this.isInvalid) {
-			classes += " slds-has-error";
-		}
-		return classes;
-	}
+    get isInvalid() {
+        return this.required && this.hasInteracted && !this._value;
+    }
 
-	handleChange(event) {
-		this._value = event.target.value;
-		if (this._value) {
-			this.hasInteracted = false;
-		}
-		this.fireChange();
-	}
+    get formElementClasses() {
+        return `slds-form-element${this.isInvalid ? " slds-has-error" : ""}`;
+    }
 
-	handleInput() {
-		this.isOpen = true;
-	}
+    get classes() {
+        return `slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click${this.isOpen ? " slds-is-open" : ""}`;
+    }
 
-	fireChange() {
-		this.dispatchEvent(new CustomEvent("change", {detail: {value: this._value}}));
-	}
+    get inputClasses() {
+        return `slds-input slds-combobox__input${this.isOpen ? " slds-has-focus" : ""}`;
+    }
 
-	get classes() {
-		let classes = "slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click";
-		if (this.isOpen) {
-			return classes + " slds-is-open";
-		}
-		return classes;
-	}
+    /*** EVENT HANDLERS ***/
+    handleChange(event) {
+        this._value = event.target.value;
+        this.hasInteracted = false;
+        this.fireChange();
+    }
 
-	get inputClasses() {
-		let inputClasses = "slds-input slds-combobox__input";
-		if (this.isOpen) {
-			return inputClasses + " slds-has-focus";
-		}
-		return inputClasses;
-	}
+    handleInput() {
+        this.isOpen = true;
+    }
 
-	allowBlur() {
-		this._cancelBlur = false;
-	}
+    handleFocus() {
+        this._inputHasFocus = true;
+        this.isOpen = true;
+        this.highlightCounter = null;
+        this.dispatchEvent(new CustomEvent("focus"));
+    }
 
-	cancelBlur() {
-		this._cancelBlur = true;
-	}
+    handleBlur() {
+        this._inputHasFocus = false;
+        if (this._cancelBlur) return;
+        this.isOpen = false;
+        if (!this._value) this.hasInteracted = true;
+        this.highlightCounter = null;
+        this.dispatchEvent(new CustomEvent("blur"));
+    }
 
-	handleDropdownMouseDown(event) {
-		const mainButton = 0;
-		if (event.button === mainButton) {
-			this.cancelBlur();
-		}
-	}
+    handleSelect(event) {
+        this._value = event.currentTarget.dataset.value;
+        this.isOpen = false;
+        this.allowBlur();
+        this.fireChange();
+    }
 
-	handleDropdownMouseUp() {
-		this.allowBlur();
-	}
+    handleKeyDown(event) {
+        const keyMap = {
+            Escape: () => {
+                this.isOpen = !this.isOpen;
+                this.highlightCounter = null;
+            },
+            Enter: () => {
+                if (this.isOpen && this.highlightCounter !== null) {
+                    this._value = this.tempOptions[this.highlightCounter].value;
+                    this.isOpen = false;
+                    this.fireChange();
+                } else {
+                    this.handleFocus();
+                }
+            },
+            ArrowDown: () => this.moveHighlight(1),
+            PageDown: () => this.moveHighlight(1),
+            ArrowUp: () => this.moveHighlight(-1),
+            PageUp: () => this.moveHighlight(-1),
+            Home: () => (this.highlightCounter = 0),
+            End: () => (this.highlightCounter = this.tempOptions.length - 1)
+        };
 
-	handleDropdownMouseLeave() {
-		if (!this._inputHasFocus) {
-			this.showList = false;
-		}
-	}
+        if (keyMap[event.key]) keyMap[event.key]();
+    }
 
-	handleBlur() {
-		this._inputHasFocus = false;
-		if (this._cancelBlur) {
-			return;
-		}
-		this.isOpen = false;
-		if (!this._value) {
-			this.hasInteracted = true;
-		}
+    /*** HELPER METHODS ***/
+    moveHighlight(step) {
+        this._inputHasFocus = true;
+        this.isOpen = true;
+        this.highlightCounter =
+            this.highlightCounter === null
+                ? 0
+                : (this.highlightCounter + step + this.tempOptions.length) % this.tempOptions.length;
+    }
 
-		this.highlightCounter = null;
-		this.dispatchEvent(new CustomEvent("blur"));
-	}
+    highlightOptions(options) {
+        return options.map((option, index) => ({
+            ...option,
+            classes: `slds-media slds-listbox__option slds-listbox__option_plain slds-media_small${index === this.highlightCounter ? " slds-has-focus" : ""}`,
+            focused: index === this.highlightCounter ? "yes" : ""
+        }));
+    }
 
-	handleFocus() {
-		this._inputHasFocus = true;
-		this.isOpen = true;
-		this.highlightCounter = null;
-		this.dispatchEvent(new CustomEvent("focus"));
-	}
+    fireChange() {
+        this.dispatchEvent(new CustomEvent("change", { detail: { value: this._value } }));
+    }
 
-	handleSelect(event) {
-		this.isOpen = false;
-		this.allowBlur();
-		this._value = event.currentTarget.dataset.value;
-		this.fireChange();
-	}
+    allowBlur() {
+        this._cancelBlur = false;
+    }
 
-	handleKeyDown(event) {
-		if (event.key == "Escape") {
-			this.isOpen = !this.isOpen;
-			this.highlightCounter = null;
-		} else if (event.key === "Enter" && this.isOpen) {
-			if (this.highlightCounter !== null) {
-				this.isOpen = false;
-				this.allowBlur();
-				this._value = this.tempOptions[this.highlightCounter].value;
-				this.fireChange();
-			}
-		} else if (event.key === "Enter") {
-			this.handleFocus();
-		}
+    cancelBlur() {
+        this._cancelBlur = true;
+    }
 
-		if (event.key === "ArrowDown" || event.key === "PageDown") {
-			this._inputHasFocus = true;
-			this.isOpen = true;
-			this.highlightCounter = this.highlightCounter === null ? 0 : this.highlightCounter + 1;
-		} else if (event.key === "ArrowUp" || event.key === "PageUp") {
-			this._inputHasFocus = true;
-			this.isOpen = true;
-			this.highlightCounter = this.highlightCounter === null || this.highlightCounter === 0 ? this.tempOptions.length - 1 : this.highlightCounter - 1;
-		}
+    handleDropdownMouseDown(event) {
+        if (event.button === 0) this.cancelBlur();
+    }
 
-		if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-			this.highlightCounter = Math.abs(this.highlightCounter) % this.tempOptions.length;
-		}
+    handleDropdownMouseUp() {
+        this.allowBlur();
+    }
 
-		if (event.key === "Home") {
-			this.highlightCounter = 0;
-		} else if (event.key === "End") {
-			this.highlightCounter = this.tempOptions.length - 1;
-		}
-	}
+    handleDropdownMouseLeave() {
+        if (!this._inputHasFocus) this.isOpen = false;
+    }
 
-	highLightOption(options) {
-		let classes = "slds-media slds-listbox__option slds-listbox__option_plain slds-media_small";
-
-		return options.map((option, index) => {
-			let cs = classes;
-			let focused = "";
-			if (index === this.highlightCounter) {
-				cs = classes + " slds-has-focus";
-				focused = "yes";
-			}
-			return {classes: cs, focused, ...option};
-		});
-	}
-
-	renderedCallback() {
-		this.template.querySelector("[data-focused='yes']")?.scrollIntoView();
-	}
+    renderedCallback() {
+        this.template.querySelector("[data-focused='yes']")?.scrollIntoView();
+    }
 }
