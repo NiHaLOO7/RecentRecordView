@@ -1,19 +1,18 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track } from "lwc";
 
 export default class InputWithDropDown extends LightningElement {
-    @api messageWhenInvalid = 'Please select a valid value';
+    @api messageWhenInvalid = "Please type or select a value";
     @api required = false;
-    @api label = 'Subject';
+    @api label = "Subject";
 
     @track _options = [];
-    
-    searchedText = '';
+
+    @track selectedValueLabel = '';
+
+    _value = "";
     isOpen = false;
     highlightCounter = null;
     hasInteracted = false;
-    placeholder = "Select an Option";
-    
-    _value = '';
     _inputHasFocus = false;
     _cancelBlur = false;
 
@@ -23,11 +22,7 @@ export default class InputWithDropDown extends LightningElement {
     }
 
     set value(val) {
-        if (this._options.some(option => option.value === val)) {
-            this.searchedText = val;
-        } else {
-            this.searchedText = '';
-        }
+        this._value = val;
     }
 
     @api get options() {
@@ -39,9 +34,9 @@ export default class InputWithDropDown extends LightningElement {
     }
 
     get tempOptions() {
-        let options = this.searchedText
+        let options = this._value
             ? this._options.filter((op) =>
-                  op.label.toLowerCase().includes(this.searchedText.toLowerCase())
+                  op.label.toLowerCase().includes(this._value.toLowerCase())
               )
             : this._options;
 
@@ -53,20 +48,22 @@ export default class InputWithDropDown extends LightningElement {
     }
 
     get formElementClasses() {
-        return `slds-form-element${this.isInvalid ? ' slds-has-error' : ''}`;
+        return `slds-form-element${this.isInvalid ? " slds-has-error" : ""}`;
     }
 
     get classes() {
-        return `slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click${this.isOpen ? ' slds-is-open' : ''}`;
+        return `slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click${this.isOpen ? " slds-is-open" : ""}`;
     }
 
     get inputClasses() {
-        return `slds-input slds-combobox__input${this.isOpen ? ' slds-has-focus' : ''}`;
+        return `slds-input slds-combobox__input${this.isOpen ? " slds-has-focus" : ""}`;
     }
 
     /*** EVENT HANDLERS ***/
     handleChange(event) {
-        this.searchedText = event.target.value;
+        this._value = event.target.value;
+        this.hasInteracted = false;
+        this.fireChange();
     }
 
     handleInput() {
@@ -77,22 +74,20 @@ export default class InputWithDropDown extends LightningElement {
         this._inputHasFocus = true;
         this.isOpen = true;
         this.highlightCounter = null;
-        this.dispatchEvent(new CustomEvent('focus'));
+        this.dispatchEvent(new CustomEvent("focus"));
     }
 
     handleBlur() {
         this._inputHasFocus = false;
         if (this._cancelBlur) return;
         this.isOpen = false;
-        this.hasInteracted = true;
-        if (this.searchedText !== this._value) this._value = '';
+        if (!this._value) this.hasInteracted = true;
         this.highlightCounter = null;
-        this.dispatchEvent(new CustomEvent('blur'));
+        this.dispatchEvent(new CustomEvent("blur"));
     }
 
     handleSelect(event) {
         this._value = event.currentTarget.dataset.value;
-        this.searchedText = event.currentTarget.dataset.value;
         this.isOpen = false;
         this.allowBlur();
         this.fireChange();
@@ -106,9 +101,9 @@ export default class InputWithDropDown extends LightningElement {
             },
             Enter: () => {
                 if (this.isOpen && this.highlightCounter !== null) {
-                    this.searchedText = this.tempOptions[this.highlightCounter].value;
+                    this._value = this.tempOptions[this.highlightCounter].value;
                     this.isOpen = false;
-                    // this.fireChange();
+                    this.fireChange();
                 } else {
                     this.handleFocus();
                 }
@@ -137,13 +132,13 @@ export default class InputWithDropDown extends LightningElement {
     highlightOptions(options) {
         return options.map((option, index) => ({
             ...option,
-            classes: `slds-media slds-listbox__option slds-listbox__option_plain slds-media_small${index === this.highlightCounter ? ' slds-has-focus' : ''}`,
-            focused: index === this.highlightCounter ? 'yes' : ''
+            classes: `slds-media slds-listbox__option slds-listbox__option_plain slds-media_small${index === this.highlightCounter ? " slds-has-focus" : ""}`,
+            focused: index === this.highlightCounter ? "yes" : ""
         }));
     }
 
     fireChange() {
-        this.dispatchEvent(new CustomEvent('change', { detail: { value: this._value } }));
+        this.dispatchEvent(new CustomEvent("change", { detail: { value: this._value } }));
     }
 
     allowBlur() {
@@ -167,6 +162,6 @@ export default class InputWithDropDown extends LightningElement {
     }
 
     renderedCallback() {
-        this.template.querySelector(`[data-focused='yes']`)?.scrollIntoView();
+        this.template.querySelector("[data-focused='yes']")?.scrollIntoView();
     }
 }

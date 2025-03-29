@@ -19,6 +19,31 @@
                         class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
                         role="none"
                     >
+
+                        <!-- Readonly Main Input -->
+                    <div
+                    class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right slds-form-element"
+                    role="none"
+                    
+                >
+                    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right ">
+                        <input
+                            type="text"
+                            id="main-input"
+                            class={inputClasses}
+                            value={selectedValueLabel}
+                            readonly
+                            placeholder="Select an option"
+                        />
+                        <lightning-icon
+                            size="x-small"
+                            class="slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default"
+                            icon-name="utility:down"
+                        ></lightning-icon>
+                    </div>
+                </div>
+
+
                         <div class="slds-form-element">
                             <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right ">
                                 <lightning-icon
@@ -31,13 +56,12 @@
                                     type="text"
                                     id="text-input-id-1"
                                     class={inputClasses}
-                                    value={searchedText}
+                                    value={value}
                                     onkeyup={handleChange}
                                     onfocus={handleFocus}
                                     onblur={handleBlur}
                                     onkeydown={handleKeyDown}
                                     oninput={handleInput}
-                                    placeholder={placeholder}
                                     aria-invalid={isInvalid}
                                     aria-describedby="form-error-01"
                                 />
