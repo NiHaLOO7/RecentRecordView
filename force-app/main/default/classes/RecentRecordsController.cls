@@ -1,9 +1,9 @@
 /**
  * @description       : 
- * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+ * @author            : Nihal Jha
  * @group             : 
  * @last modified on  : 04-12-2024
- * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+ * @last modified by  : Nihal Jha
 **/
 public with sharing class RecentRecordsController {
 
