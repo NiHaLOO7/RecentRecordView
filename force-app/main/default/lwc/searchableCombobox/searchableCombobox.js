@@ -1,6 +1,6 @@
 import { LightningElement, api, track } from 'lwc';
 
-export default class InputWithDropDown extends LightningElement {
+export default class SearchableCombobox extends LightningElement {
     @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
     @api label = 'Subject';
