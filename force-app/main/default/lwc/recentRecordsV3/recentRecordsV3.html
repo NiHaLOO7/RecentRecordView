@@ -12,7 +12,7 @@
             <div class="slds-grid slds-col">
                 <div class="slds-col slds-grid_vertical slds-gutters">
                     <div class="slds-col slds-p-top_medium slds-p-left_medium">
-                        <c-searchable-combobox
+                        <c-searchable-combobox-v2
                             class="slds-size_medium slds-form-element"
                             style="display: block;"
                             name="objectSelector"
@@ -21,7 +21,7 @@
                             options={objectOptions}
                             value={objectName}
                             onchange={handleObjectChange}
-                        ></c-searchable-combobox>
+                        ></c-searchable-combobox-v2>
                     </div>
                     <div class="slds-col slds-p-top_medium slds-p-left_medium">
                         <lightning-input class="slds-size_medium recordsPerPage" type="number" label="Number of Records Per Page" value={pageSize}

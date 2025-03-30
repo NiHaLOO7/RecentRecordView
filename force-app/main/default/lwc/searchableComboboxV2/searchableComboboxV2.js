@@ -1,6 +1,6 @@
 import { LightningElement, api, track } from 'lwc';
 
-export default class SearchableCombobox extends LightningElement {
+export default class SearchableComboboxV2 extends LightningElement {
     @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
     @api label = 'Subject';
@@ -8,12 +8,15 @@ export default class SearchableCombobox extends LightningElement {
     @track _options = [];
     
     searchedText = '';
+    selectedLabel = '';
     isOpen = false;
     highlightCounter = null;
     hasInteracted = false;
     placeholder = "Select an Option";
+    searchPlaceholder = "Type to Search";
     
     _value = '';
+    _pendingValue ='';
     _inputHasFocus = false;
     _cancelBlur = false;
 
@@ -23,11 +26,8 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set value(val) {
-        if (this._options.some(option => option.value === val)) {
-            this.searchedText = val;
-        } else {
-            this.searchedText = '';
-        }
+        this._pendingValue = val;
+        this.validateValue();
     }
 
     @api get options() {
@@ -36,6 +36,7 @@ export default class SearchableCombobox extends LightningElement {
 
     set options(val) {
         this._options = val || [];
+        this.validateValue();
     }
 
     get tempOptions() {
@@ -64,6 +65,14 @@ export default class SearchableCombobox extends LightningElement {
         return `slds-input slds-combobox__input${this.isOpen ? ' slds-has-focus' : ''}`;
     }
 
+    get comboboxClasses() {
+        return `slds-combobox__input slds-input_faux fix-slds-input_faux${this.selectedLabel ? ' slds-combobox__input-value' : ''}`;
+    }
+
+    get comboBoxLabel(){
+        return this.selectedLabel ? this.selectedLabel : 'Select an Option';
+    }
+
     /*** EVENT HANDLERS ***/
     handleChange(event) {
         this.searchedText = event.target.value;
@@ -73,26 +82,34 @@ export default class SearchableCombobox extends LightningElement {
         this.isOpen = true;
     }
 
-    handleFocus() {
-        this._inputHasFocus = true;
-        this.isOpen = true;
+    handleFocus(event) {
+        const funct = event.target.dataset.function;
         this.highlightCounter = null;
-        this.dispatchEvent(new CustomEvent('focus'));
+        this.isOpen = true;
+        //this.isOpen = funct === 'combobox'? this.isOpen : true;
+        this._inputHasFocus = true;
+        if(funct === 'combobox') this.dispatchEvent(new CustomEvent('focus'));
     }
 
-    handleBlur() {
+    // handleClick() {
+    //         this.isOpen = !this.isOpen;
+    //         this.highlightCounter = null;
+    // }
+
+    handleBlur(event) {
+        const funct = event.target.dataset.function;
         this._inputHasFocus = false;
         if (this._cancelBlur) return;
         this.isOpen = false;
         this.hasInteracted = true;
-        if (this.searchedText !== this._value) this._value = '';
         this.highlightCounter = null;
-        this.dispatchEvent(new CustomEvent('blur'));
+        if(funct === 'combobox') this.dispatchEvent(new CustomEvent('blur'));
     }
 
     handleSelect(event) {
         this._value = event.currentTarget.dataset.value;
-        this.searchedText = event.currentTarget.dataset.value;
+        this.searchedText = event.currentTarget.dataset.label;
+        this.selectedLabel = event.currentTarget.dataset.label;
         this.isOpen = false;
         this.allowBlur();
         this.fireChange();
@@ -106,7 +123,9 @@ export default class SearchableCombobox extends LightningElement {
             },
             Enter: () => {
                 if (this.isOpen && this.highlightCounter !== null) {
-                    this.searchedText = this.tempOptions[this.highlightCounter].value;
+                    this._value = this.tempOptions[this.highlightCounter].value;
+                    this.searchedText = this.tempOptions[this.highlightCounter].label;
+                    this.selectedLabel = this.tempOptions[this.highlightCounter].label;
                     this.isOpen = false;
                     this.fireChange();
                 } else {
@@ -125,6 +144,13 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     /*** HELPER METHODS ***/
+    validateValue() {
+        if (!this._options.length || this._value === this._pendingValue) return;
+        const option = this._options.find(op => op.value === this._pendingValue);
+        this.selectedLabel =  option ? option.label : '';
+        this.searchedText = this.selectedLabel;
+    }
+
     moveHighlight(step) {
         this._inputHasFocus = true;
         this.isOpen = true;
