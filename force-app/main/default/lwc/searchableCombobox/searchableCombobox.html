@@ -1,9 +1,9 @@
 <template>
-    <div onfocusout={handleBlur} class={formElementClasses}>
+    <div class={formElementClasses}>
         <label
             class="slds-form-element__label"
-            for="combobox-id-2"
-            id="combobox-label-id-130"
+            for="combobox"
+            id="combobox-label"
         >
             <abbr
                 if:true={required}
@@ -29,7 +29,7 @@
                                 <input
                                     required={required}
                                     type="text"
-                                    id="text-input-id-1"
+                                    id="combobox"
                                     class={inputClasses}
                                     value={searchedText}
                                     onkeyup={handleChange}
@@ -47,7 +47,7 @@
                     </div>
                     <div
                         if:true={tempOptions.length}
-                        id="listbox-id-4"
+                        id="listbox"
                         class="slds-dropdown slds-dropdown_length-7 slds-dropdown_fluid"
                         role="listbox"
                         onmousedown={handleDropdownMouseDown}
@@ -95,7 +95,7 @@
         <div
             class="slds-form-element__help"
             if:true={isInvalid}
-            id="form-error-01"
+            id="form-error"
         >{messageWhenInvalid}</div>
     </div>
 </template>
