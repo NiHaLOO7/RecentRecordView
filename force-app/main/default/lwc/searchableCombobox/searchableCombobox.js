@@ -184,6 +184,15 @@ export default class SearchableCombobox extends LightningElement {
         }));
     }
 
+    handleMouseEnter(event) {
+        this.template.querySelector('div.slds-has-focus')?.classList?.remove('slds-has-focus');
+        event.currentTarget.classList.add('slds-has-focus');
+    }
+
+    handleMouseLeave(event) {
+        event.currentTarget.classList.remove('slds-has-focus');
+    }
+
     fireChange() {
         this.dispatchEvent(new CustomEvent('change', { detail: { value: this._value } }));
     }
