@@ -35,24 +35,26 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set options(val) {
-        this._options = val || [];
+        this._options = JSON.parse(JSON.stringify(val || []));
+        this.reorderOptions();
         this.validateValue();
     }
 
 
     get tempOptions() {
         let options;
-        const selOpts = this._options.find(op => op.label === this.searchedText);
-        if (!this.isOpen || (this.isOpen && 
-            selOpts && selOpts.value  === this._value)) 
+        if([null, undefined].includes(this._value)) return this._options;
+        const selOpts = this.options.find(op => op.value === this._value)?.label || '';
+        if (!this.isOpen || (this.isOpen && this.searchedText === selOpts)) 
         {
             options = this.options;
         } else {
             options = this.searchedText
-                ? this._options.filter((op) =>
-                      op.label.toLowerCase().includes(this.searchedText.toLowerCase())
+                ? this.options.filter((op) =>
+                      op.label.toLowerCase().includes(this.searchedText.toLowerCase()) ||
+                      op.value === this.value
                   )
-                : this._options;
+                : this.options;
         }
         return this.highlightOptions(options);
     }
@@ -163,6 +165,7 @@ export default class SearchableCombobox extends LightningElement {
         // let options = [];
         if (!this._options.length) return this._options;
         this._options = [...this._options].sort((a, b) => a.label.localeCompare(b.label));
+        if([null, undefined].includes(this._value)) return this._options;
         const selectedIndex = this._options.findIndex(op => op.value === this._value);
         if (selectedIndex > 0) {
             this._options = [this._options[selectedIndex], ...this._options.filter((_, i) => i !== selectedIndex)];
