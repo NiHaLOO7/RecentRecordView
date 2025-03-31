@@ -125,6 +125,7 @@ export default class SearchableCombobox extends LightningElement {
                     this.searchedText  = labelValuePair.label;
                     this._value =  labelValuePair.value;
                     this.isOpen = false;
+                    this.allowBlur();
                     this.fireChange();
                 } else {
                     this.handleFocus();
