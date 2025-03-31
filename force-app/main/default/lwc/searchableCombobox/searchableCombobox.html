@@ -48,7 +48,7 @@
                     <div
                         if:true={tempOptions.length}
                         id="listbox-id-4"
-                        class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                        class="slds-dropdown slds-dropdown_length-7 slds-dropdown_fluid"
                         role="listbox"
                         onmousedown={handleDropdownMouseDown}
                         onmouseup={handleDropdownMouseUp}
@@ -68,11 +68,16 @@
                                 <div
                                     onclick={handleSelect}
                                     data-value={option.value}
+                                    data-label={option.label}
                                     class={option.classes}
                                     role="option"
                                     data-focused={option.focused}
                                 >
-                                    <span class="slds-media__figure slds-listbox__option-icon"></span>
+                                    <span class="slds-media__figure slds-align_absolute-center slds-listbox__option-icon">
+                                        <template if:true={option.isSelected}>
+                                            <lightning-icon icon-name="utility:check" class="slds-icon-utility-check slds-icon_container" size="x-small" alternative-text="Selected"></lightning-icon>
+                                        </template>
+                                    </span>
                                     <span class="slds-media__body">
                                         <span
                                             class="slds-truncate"

@@ -125,7 +125,6 @@ export default class RecentRecordsV3  extends NavigationMixin (
         if (data) {
             this.handleSuccess();
             const flattened = JSON.parse(JSON.stringify(data)).map(s => this.flattenObject(s));
-            console.log(JSON.stringify(flattened));
 
             this.records = JSON.parse(JSON.stringify(data)).map(recordData => ({
                 ...this.flattenObject(recordData.record),
@@ -194,7 +193,6 @@ export default class RecentRecordsV3  extends NavigationMixin (
     handleObjectChange(event) {
         this.objectName = event.detail.value;
         this.getFieldsByObj(this.objectName);
-        console.log(this.objectName);
     }
 
     // Gets the list of all the fields in any salesforce entity
@@ -228,7 +226,6 @@ export default class RecentRecordsV3  extends NavigationMixin (
     }
 
     handleError(error) {
-        console.log(JSON.stringify(error));
         this.errorMessage = error.body.message;
     }
 }

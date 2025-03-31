@@ -12,8 +12,10 @@ export default class SearchableCombobox extends LightningElement {
     highlightCounter = null;
     hasInteracted = false;
     placeholder = "Select an Option";
+    ValLabelDict = {};
     
     _value = '';
+    _pendingValue = '';
     _inputHasFocus = false;
     _cancelBlur = false;
 
@@ -23,28 +25,35 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set value(val) {
-        if (this._options.some(option => option.value === val)) {
-            this.searchedText = val;
-        } else {
-            this.searchedText = '';
-        }
+        this._pendingValue = val;
+        this.validateValue();
     }
 
     @api get options() {
-        return this._options;
+        return this.reorderOptions();
+        // return this._options;
     }
 
     set options(val) {
         this._options = val || [];
+        this.validateValue();
     }
 
-    get tempOptions() {
-        let options = this.searchedText
-            ? this._options.filter((op) =>
-                  op.label.toLowerCase().includes(this.searchedText.toLowerCase())
-              )
-            : this._options;
 
+    get tempOptions() {
+        let options;
+        const selOpts = this._options.find(op => op.label === this.searchedText);
+        if (!this.isOpen || (this.isOpen && 
+            selOpts && selOpts.value  === this._value)) 
+        {
+            options = this.options;
+        } else {
+            options = this.searchedText
+                ? this._options.filter((op) =>
+                      op.label.toLowerCase().includes(this.searchedText.toLowerCase())
+                  )
+                : this._options;
+        }
         return this.highlightOptions(options);
     }
 
@@ -67,6 +76,11 @@ export default class SearchableCombobox extends LightningElement {
     /*** EVENT HANDLERS ***/
     handleChange(event) {
         this.searchedText = event.target.value;
+        if(event.target.value === '' && this._value !== '' ) {
+            this._value = '';
+            this.highlightCounter = null;
+            this.fireChange();
+        }
     }
 
     handleInput() {
@@ -76,23 +90,21 @@ export default class SearchableCombobox extends LightningElement {
     handleFocus() {
         this._inputHasFocus = true;
         this.isOpen = true;
-        this.highlightCounter = null;
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
     handleBlur() {
+        console.log('c')
         this._inputHasFocus = false;
         if (this._cancelBlur) return;
         this.isOpen = false;
         this.hasInteracted = true;
-        if (this.searchedText !== this._value) this._value = '';
-        this.highlightCounter = null;
         this.dispatchEvent(new CustomEvent('blur'));
     }
 
     handleSelect(event) {
         this._value = event.currentTarget.dataset.value;
-        this.searchedText = event.currentTarget.dataset.value;
+        this.searchedText = event.currentTarget.dataset.label;
         this.isOpen = false;
         this.allowBlur();
         this.fireChange();
@@ -100,13 +112,18 @@ export default class SearchableCombobox extends LightningElement {
 
     handleKeyDown(event) {
         const keyMap = {
-            Escape: () => {
+            Escape: (event) => {
                 this.isOpen = !this.isOpen;
                 this.highlightCounter = null;
             },
-            Enter: () => {
+            Enter: (event) => {
                 if (this.isOpen && this.highlightCounter !== null) {
-                    this.searchedText = this.tempOptions[this.highlightCounter].value;
+                    const labelValuePair = {
+                        label: this.tempOptions[this.highlightCounter].label,
+                        value: this.tempOptions[this.highlightCounter].value
+                    }
+                    this.searchedText  = labelValuePair.label;
+                    this._value =  labelValuePair.value;
                     this.isOpen = false;
                     this.fireChange();
                 } else {
@@ -121,7 +138,7 @@ export default class SearchableCombobox extends LightningElement {
             End: () => (this.highlightCounter = this.tempOptions.length - 1)
         };
 
-        if (keyMap[event.key]) keyMap[event.key]();
+        if (keyMap[event.key]) keyMap[event.key](event);
     }
 
     /*** HELPER METHODS ***/
@@ -132,11 +149,34 @@ export default class SearchableCombobox extends LightningElement {
             this.highlightCounter === null
                 ? 0
                 : (this.highlightCounter + step + this.tempOptions.length) % this.tempOptions.length;
+
     }
+
+    validateValue() {
+        if (!this._options.length || this._value === this._pendingValue) return;
+        const option = this._options.find(op => op.value === this._pendingValue);
+        this.searchedText =  option ? option.label : '';
+        this._value = option ? option.value : '';
+    }
+
+    reorderOptions() {
+        // let options = [];
+        if (!this._options.length) return this._options;
+        this._options = [...this._options].sort((a, b) => a.label.localeCompare(b.label));
+        const selectedIndex = this._options.findIndex(op => op.value === this._value);
+        if (selectedIndex > 0) {
+            this._options = [this._options[selectedIndex], ...this._options.filter((_, i) => i !== selectedIndex)];
+        }
+        if(!this.isOpen) this.highlightCounter = this._options.some(op => op.value === this._value) ? this._options.findIndex(op => op.value === this._value) : null;
+        return this._options;
+    }
+
+
 
     highlightOptions(options) {
         return options.map((option, index) => ({
             ...option,
+            isSelected: option.value === this._value,
             classes: `slds-media slds-listbox__option slds-listbox__option_plain slds-media_small${index === this.highlightCounter ? ' slds-has-focus' : ''}`,
             focused: index === this.highlightCounter ? 'yes' : ''
         }));
@@ -167,6 +207,6 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     renderedCallback() {
-        this.template.querySelector(`[data-focused='yes']`)?.scrollIntoView();
+        this.template.querySelector(`[data-focused='yes']`)?.scrollIntoView({ block: "nearest" });
     }
 }
