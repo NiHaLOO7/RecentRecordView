@@ -31,7 +31,6 @@ export default class SearchableCombobox extends LightningElement {
 
     @api get options() {
         return this.reorderOptions();
-        // return this._options;
     }
 
     set options(val) {
@@ -96,7 +95,6 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     handleBlur() {
-        console.log('c')
         this._inputHasFocus = false;
         if (this._cancelBlur) return;
         this.isOpen = false;
@@ -114,11 +112,11 @@ export default class SearchableCombobox extends LightningElement {
 
     handleKeyDown(event) {
         const keyMap = {
-            Escape: (event) => {
+            Escape: () => {
                 this.isOpen = !this.isOpen;
                 this.highlightCounter = null;
             },
-            Enter: (event) => {
+            Enter: () => {
                 if (this.isOpen && this.highlightCounter !== null) {
                     const labelValuePair = {
                         label: this.tempOptions[this.highlightCounter].label,
@@ -208,8 +206,9 @@ export default class SearchableCombobox extends LightningElement {
     handleDropdownMouseLeave() {
         if (!this._inputHasFocus) this.isOpen = false;
     }
-
+    
     renderedCallback() {
-        this.template.querySelector(`[data-focused='yes']`)?.scrollIntoView({ block: "nearest" });
+        this.template.querySelector(`[data-focused='yes']`)?.scrollIntoView({ block: "nearest" }) ||
+        !this._value ? this.template.querySelector(`[data-function='options']`)?.scrollIntoView({ block: "nearest" }) : null;
     }
 }
