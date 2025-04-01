@@ -61,6 +61,7 @@
                             <li
                                 for:each={tempOptions}
                                 for:item="option"
+                                for:index="index"
                                 key={option.value}
                                 role="presentation"
                                 class="slds-listbox__item"
@@ -72,6 +73,7 @@
                                     data-value={option.value}
                                     data-label={option.label}
                                     data-function="options"
+                                    data-index={index}
                                     class={option.classes}
                                     role="option"
                                     data-focused={option.focused}

@@ -96,7 +96,8 @@ export default class RecentRecords  extends NavigationMixin (
     wiredObjects({ error, data }) {
         if (data) {
             this.handleSuccess();
-            this.objectOptions = data;
+            this.objectOptions = JSON.parse(JSON.stringify(data)).sort((a, b) => a.label.localeCompare(b.label));
+            // this.objectOptions = data;
         } else if (error) {
             this.handleError(error);
         }

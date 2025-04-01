@@ -4,6 +4,7 @@ export default class SearchableCombobox extends LightningElement {
     @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
     @api label = 'Subject';
+    @api sort = false;
 
     @track _options = [];
     
@@ -163,7 +164,7 @@ export default class SearchableCombobox extends LightningElement {
     reorderOptions() {
         // let options = [];
         if (!this._options.length) return this._options;
-        this._options = [...this._options].sort((a, b) => a.label.localeCompare(b.label));
+        this._options = this.sort ? [...this._options].sort((a, b) => a.label.localeCompare(b.label)) : this._options;;
         if([null, undefined].includes(this._value)) return this._options;
         const selectedIndex = this._options.findIndex(op => op.value === this._value);
         if (selectedIndex > 0) {
@@ -186,6 +187,7 @@ export default class SearchableCombobox extends LightningElement {
 
     handleMouseEnter(event) {
         this.template.querySelector('div.slds-has-focus')?.classList?.remove('slds-has-focus');
+        this.highlightCounter = parseInt(event.currentTarget.dataset.index);
         event.currentTarget.classList.add('slds-has-focus');
     }
 
