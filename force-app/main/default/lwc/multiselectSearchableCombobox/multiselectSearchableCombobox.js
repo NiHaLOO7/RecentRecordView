@@ -345,8 +345,7 @@ export default class SearchableCombobox extends LightningElement {
         const keyMap = {
             Escape: (event) => {
                 this.preventDefaultAndStopPropagation(event);
-                this._dropdownVisible = !this._dropdownVisible;
-                this.setHighlightCounter(null);
+                this._dropdownVisible ?  this.handleBlur() : this.handleTriggerClick();
             },
             Enter: (event) => {
                 this.preventDefaultAndStopPropagation(event);
