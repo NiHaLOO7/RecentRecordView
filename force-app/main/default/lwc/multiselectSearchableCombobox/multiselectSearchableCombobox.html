@@ -17,7 +17,6 @@
                 <div 
                     class={computedDropdownTriggerClass}
                     role="combobox"
-                    onclick={handleTriggerClick}
                     aria-haspopup="listbox">
                     <div
                         class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
@@ -36,6 +35,7 @@
                                     role="textbox"
                                     id="combobox"
                                     name={name}
+                                    onclick={handleTriggerClick}
                                     autocomplete={aurocomplete}
                                     class={inputClasses}
                                     value={inputValue}

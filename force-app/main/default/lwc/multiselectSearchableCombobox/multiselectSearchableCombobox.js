@@ -542,7 +542,8 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     fireChange() {
-        this.dispatchEvent(new CustomEvent('change', { detail: { value: this._value[0] } }));
+        const fireValue = this.multiselect ? this._value : this._value[0];
+        this.dispatchEvent(new CustomEvent('change', { detail: { value: fireValue } }));
     }
 
     allowBlur() {
@@ -601,7 +602,7 @@ export default class SearchableCombobox extends LightningElement {
 
     renderedCallback() {
         // this.dispatchReadyEvent();
-        if(!this._cancelScrolling) this.template.querySelector(`div.slds-is-selected`)?.scrollIntoView({ block: "nearest" });
+        // if(!this._cancelScrolling) this.template.querySelector(`div.slds-is-selected`)?.scrollIntoView({ block: "nearest" });
         if(!this._isValuesRendered && this._value.length) {
             this.updateSelectedOptions(this._value);
             this._isValuesRendered = true;
