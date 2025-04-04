@@ -111,7 +111,7 @@ export default class SearchableCombobox extends LightningElement {
             'Escape', 'Enter', 'ArrowDown', 'PageDown',
             'ArrowUp', 'PageUp', 'Home', 'End', 'ArrowLeft', 'ArrowRight'
         ];
-        if (excludedKeys.includes(event.key) || !event.target.value.trim()) return;
+        if (excludedKeys.includes(event.key) /** || !event.target.value.trim()**/ ) return;
         this.searchedText = event.target.value;
         this.allowHighlight();
         this.tempOptions =  this.searchedText ? 
