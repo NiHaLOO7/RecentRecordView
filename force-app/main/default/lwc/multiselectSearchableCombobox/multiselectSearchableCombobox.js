@@ -17,8 +17,8 @@ export default class SearchableCombobox extends LightningElement {
 
     _multiselect = false;
     _sort = false;
+    _showValues = false;
     _pills = false;  
-    _selectedLabel =[];
     _inputHasFocus = false;
     _cancelBlur = false;
     _cancelHighlight = false;
@@ -26,6 +26,38 @@ export default class SearchableCombobox extends LightningElement {
     _isComponentRendered = false;
     _cancelScrolling = false;
 
+    //To do
+    // _fieldLevelHelp;
+    // /** Specifies where the drop-down list is aligned with or anchored to
+    // the selection field. By default the list is aligned with the
+    // selection field at the top left so the list opens down. Use bottom-left
+    // to make the selection field display at the bottom so the list opens
+    // above it. Use auto to let the component determine where to open
+    // the list based on space available. **/
+    // _dropdownAlignment;
+    // _messageWhenValueMissing;
+    // _name;
+    // _search;
+    // _disabled;
+    // _readOnly;
+    // _required;
+    // _spinnerActive;
+    // _validity;
+    // _variant;
+
+
+    //To Do Methods => 
+    // blur
+    // checkValidity
+    // focus
+    // reportValidity
+    // setCustomValidity
+    // showHelpMessageIfInvalid
+    //  setCustomValidity = 
+        // Name => message	
+        // Type => unknown	
+        // Description => The string that describes the error. If message is an empty string, the error messages reset.
+	
     /*** GETTERS & SETTERS ***/
     @api get value() {
         return this._value;
@@ -53,6 +85,14 @@ export default class SearchableCombobox extends LightningElement {
     set sort(val) {
         this._sort = this.booleanValidator(val);
         this._options = this.sortOptions(this._options);
+    }
+
+    @api get showValues() {
+        return this._showValues;
+    }
+
+    set showValues(val) {
+        this._showValues = this.booleanValidator(val);
     }
 
     @api get multiselect() {

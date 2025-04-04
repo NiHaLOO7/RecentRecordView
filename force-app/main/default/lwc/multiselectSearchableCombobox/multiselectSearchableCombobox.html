@@ -90,10 +90,15 @@
                                         <!-- </template> -->
                                     </span>
                                     <span class="slds-media__body">
-                                        <span
-                                            class="slds-truncate"
-                                            title={option.label}
-                                        >{option.label}</span>
+                                        <span class="slds-truncate" title={option.label}>
+                                            {option.label}
+                                        </span>
+                                        <template if:true={showValues}>
+                                        <br />
+                                            <span class="slds-text-color_weak slds-text-body_small">
+                                                {option.value}
+                                            </span>
+                                        </template>
                                     </span>
                                 </div>
                             </li>
