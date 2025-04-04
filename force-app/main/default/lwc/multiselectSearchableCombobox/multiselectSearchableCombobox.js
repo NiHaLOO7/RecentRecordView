@@ -4,7 +4,6 @@ export default class SearchableCombobox extends LightningElement {
     @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
     @api label = 'Subject';
-    multiselect = false;
     
     searchedText = '';
     isOpen = false;
@@ -16,7 +15,7 @@ export default class SearchableCombobox extends LightningElement {
     @track _value = [];
     @track tempOptions = [];
 
-    
+    _multiselect = false;
     _sort = false;
     _pills = false;  
     _selectedLabel =[];
@@ -54,6 +53,14 @@ export default class SearchableCombobox extends LightningElement {
     set sort(val) {
         this._sort = this.booleanValidator(val);
         this._options = this.sortOptions(this._options);
+    }
+
+    @api get multiselect() {
+        return this._multiselect;
+    }
+
+    set multiselect(val) {
+        this._multiselect = this.booleanValidator(val);
     }
 
     get selectedOptions () {
