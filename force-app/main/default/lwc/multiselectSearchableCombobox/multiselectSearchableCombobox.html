@@ -35,12 +35,15 @@
                                     type="text"
                                     role="textbox"
                                     id="combobox"
+                                    name={name}
+                                    autocomplete={aurocomplete}
                                     class={inputClasses}
                                     value={inputValue}
                                     onkeyup={handleChange}
                                     onfocus={handleFocus}
                                     onblur={handleBlur}
                                     readonly={readonly}
+                                    disabled={disabled}
                                     onkeydown={handleKeyDown}
                                     oninput={handleInput}
                                     placeholder={placeholder}
@@ -54,7 +57,7 @@
                     <div
                         if:true={tempOptions.length}
                         id="listbox"
-                        class="slds-dropdown slds-dropdown_length-7 slds-dropdown_fluid"
+                        class={computedDropdownClass}
                         role="listbox"
                         onmousedown={handleDropdownMouseDown}
                         onmouseup={handleDropdownMouseUp}
