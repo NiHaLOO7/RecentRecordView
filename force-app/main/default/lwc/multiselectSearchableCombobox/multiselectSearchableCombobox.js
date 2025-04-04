@@ -4,7 +4,6 @@ export default class SearchableCombobox extends LightningElement {
     @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
     @api label = 'Subject';
-    @api sort = false;
     multiselect = true;
     @track _options = [];
     
@@ -12,16 +11,18 @@ export default class SearchableCombobox extends LightningElement {
     isOpen = false;
     highlightCounter = null;
     hasInteracted = false;
-    ValLabelDict = {};
     
-    isRendered = false;
-
+    _sort = false;
     _pills = false;
     _value = [];
     _pendingValue = [];
     _selectedLabel =[];
     _inputHasFocus = false;
     _cancelBlur = false;
+    _cancelHighlight = false;
+    _isValuesRendered = false;
+    _isComponentRendered = false;
+    _cancelScrolling = false;
 
     /*** GETTERS & SETTERS ***/
     @api get value() {
@@ -29,25 +30,30 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set value(val) {
-        console.log('val', val)
         this._pendingValue = typeof val === 'string' ? [val] : typeof val === 'object' ? val : [];
         this.validateValue();
     }
 
     @api get options() {
-        // console.log('getter')
-        return this.reorderOptions();
+        return this.reorderOptions(this._options);
     }
 
     set options(val) {
-        this._options = JSON.parse(JSON.stringify(val || []));
-        // console.log('setter')
-        this.reorderOptions();
+        this._options = this.sortOptions(JSON.parse(JSON.stringify(val || [])));
+        this.tempOptions =  this.reorderOptions(this._options);
         this.validateValue();
     }
 
+    @api get sort() {
+        return this._sort;
+    }
+
+    set sort(val) {
+        this._sort = this.booleanValidator(val);
+        this._options = this.sortOptions(this._options);
+    }
+
     get selectedOptions () {
-        // console.log(this._options.filter(op => this._value.includes(op.value)));
         return this._options.filter(op => this._value.includes(op.value));
     }
 
@@ -64,22 +70,7 @@ export default class SearchableCombobox extends LightningElement {
         return '';
     }
 
-
-    get tempOptions() {
-        let options =  this.options;
-        if(!(this._options && this._options?.length)) return [];
-        const selOpts = this._options.filter(op => this._value.includes(op.value))?.map(op => op?.label || '')|| [];
-        if (!this.isOpen || !this.searchedText || (!this.multiselect && this.isOpen && (selOpts?.[0] || '') === this.searchedText)) {
-            options = this._options;
-        } else {
-            options = this._options.filter((op) =>
-                      op.label.toLowerCase().includes(this.searchedText.toLowerCase()) ||
-                      this._value.includes(op.value)
-                  );
-        }
-        return this.highlightOptions(options);
-    }
-    
+    tempOptions = []; 
 
     @api get pills() {
         return this._pills && this.multiselect;
@@ -105,34 +96,45 @@ export default class SearchableCombobox extends LightningElement {
         return `slds-input slds-combobox__input${this.isOpen ? ' slds-has-focus' : ''}`;
     }
 
+
     /*** EVENT HANDLERS ***/
     handleChange(event) {
+        const excludedKeys = [
+            'Escape', 'Enter', 'ArrowDown', 'PageDown',
+            'ArrowUp', 'PageUp', 'Home', 'End', 'ArrowLeft', 'ArrowRight'
+        ];
+        if (excludedKeys.includes(event.key) || !event.target.value.trim()) return;
         this.searchedText = event.target.value;
+        this.allowHighlight();
+        console.log('reorder')
+        this.tempOptions =  this.searchedText ? 
+                            this.reorderOptions(this.getTempOptions(), true) : 
+                            this.reorderOptions(this._options, true);
     }
 
     handleInput() {
-        console.log("input")
         this.isOpen = true;
     }
 
     handleFocus() {
-        console.log("focus")
-
+        this.allowScrolling();
         this._inputHasFocus = true;
+        this.tempOptions =  this.reorderOptions(this._options);
         this.isOpen = true;
+        if(!this._cancelHighlight) this.highlightOptions(this.tempOptions?.[0]?.value || null);
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
     handleBlur() {
-        console.log("blur")
-
-        console.log('blur',this._cancelBlur)
         this._inputHasFocus = false;
         if (this._cancelBlur) return;
+        this.template.querySelector('div.options').scrollIntoView({ block: "nearest" });
         this.isOpen = false;
+        this.tempOptions = this._options;
+        this.removeAllHighlights();
+        this.allowHighlight();
         this.hasInteracted = true;
         this.searchedText = this.multiselect ? '' : this.selectedOptions[0].label;
-        // this.reorderOptions();
         this.dispatchEvent(new CustomEvent('blur'));
     }
 
@@ -140,9 +142,7 @@ export default class SearchableCombobox extends LightningElement {
         let listBoxOption = event.currentTarget.firstChild;
         if(this.multiselect) this.handleMultipleSelection(listBoxOption);
         else this.handleSingleSelection(listBoxOption);
-        console.log(JSON.stringify(this._value))
         listBoxOption.classList.toggle("slds-is-selected");
-
         this.fireChange();
     }
 
@@ -154,7 +154,6 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     handleSingleSelection(event) {
-        console.log('data');
         this._value = [event.dataset.value];
         this.template.querySelectorAll(".slds-is-selected").forEach(
             (data) => data.classList.remove("slds-is-selected"));
@@ -164,6 +163,7 @@ export default class SearchableCombobox extends LightningElement {
 
 
     handleKeyDown(event) {
+        this.cancelScrolling();
         const keyMap = {
             Escape: () => {
                 this.isOpen = !this.isOpen;
@@ -171,11 +171,13 @@ export default class SearchableCombobox extends LightningElement {
             },
             Enter: () => {
                 if (this.isOpen && this.highlightCounter !== null) {
-                    const enterEvent = {currentTarget: this.template.querySelector(`[data-selected='yes']`)};
-                    // this.searchedText  = labelValuePair.label;
+                    const enterEvent = {
+                        currentTarget: { 
+                            firstChild : 
+                            this.template.querySelector(`[data-index='${this.highlightCounter}']`)
+                        }
+                    };
                     this.handleSelect(enterEvent);
-                    // this.allowBlur();
-                    this.fireChange();
                 } else {
                     this.handleFocus();
                 }
@@ -184,8 +186,8 @@ export default class SearchableCombobox extends LightningElement {
             PageDown: () => this.moveHighlight(1),
             ArrowUp: () => this.moveHighlight(-1),
             PageUp: () => this.moveHighlight(-1),
-            Home: () => (this.highlightCounter = 0),
-            End: () => (this.highlightCounter = this.tempOptions.length - 1)
+            Home: () => this.highlightOptions(this.tempOptions[0]?.value || null),
+            End: () => this.highlightOptions(this.tempOptions?.[this.tempOptions.length - 1]?.value || null)
         };
 
         if (keyMap[event.key]) keyMap[event.key](event);
@@ -193,63 +195,117 @@ export default class SearchableCombobox extends LightningElement {
 
     /*** HELPER METHODS ***/
     moveHighlight(step) {
+        console.log('Step:', step);
+        console.log('Highlighted before step:', this.highlightCounter);
+        
         this._inputHasFocus = true;
         this.isOpen = true;
-        this.highlightCounter =
-            this.highlightCounter === null
-                ? 0
-                : (this.highlightCounter + step + this.tempOptions.length) % this.tempOptions.length;
+        const focusedElement = this.template.querySelector(`[data-index='${this.highlightCounter}']`);
+        
+        let index = null;
+        try {
+            index = this.tempOptions?.findIndex(op => op.value === focusedElement?.dataset?.value);
+            if (index === -1) index = null;
+        } catch (error) {
+            index = null;
+        }
+    
+        console.log('Focused element index before move:', index);
+        if (index === null) {
+            index = step > 0 ? 0 : this.tempOptions.length - 1;
+        } else {
+            index = (index + step + this.tempOptions.length) % this.tempOptions.length;
+        }
+    
+        const value = this.tempOptions[index]?.value;
+        console.log('Focused element after move:', value);
+    
+        if (value) {
+            this.highlightOptions(value);
+        }
+    }
+    
+    highlightOptions(value) {
+        this.removeAllHighlights();
+        if (value === null) return;
+    
+        const currentData = this.template.querySelector(`[data-value='${value}']`);
+        if (!currentData) return;
+    
+        this.highlightCounter = parseInt(currentData.dataset.index, 10);
+        console.log('Highlighted option:', this.highlightCounter);
+    
+        currentData.classList.add('slds-has-focus');
+        currentData.scrollIntoView({ block: "nearest" });
+    }
+    
 
+    removeAllHighlights() {
+        this.template.querySelectorAll('.slds-has-focus')?.forEach(data =>{ 
+            data?.classList?.remove('slds-has-focus');
+        })
     }
 
     validateValue() {
-        console.log('this._pendingValue',JSON.stringify(this._pendingValue))
-        console.log('this._value',JSON.stringify(this._value))
         if (!this._options.length || JSON.stringify(this._value) === JSON.stringify(this._pendingValue)) return;
         const valueList = this._options.filter(op =>  this._pendingValue.includes(op.value))?.map(op => op?.value || '');
-        // this.searchedText =  option ? option.label : '';
-        console.log(JSON.stringify('valuelist', valueList));
-        this._value = valueList.length ? valueList : [];
+        this._value = valueList;
+        if (this._isValuesRendered) {
+            this.updateSelectedOptions(this._value);}
     }
 
-    reorderOptions() {
-        if (!this._options.length) return this._options;
-        this._options = this.sort ? [...this._options].sort((a, b) => a?.label.localeCompare(b?.label)) : this._options;;
-        if(!this.value.length) return this._options;
-        const selectedOptions = this._options.filter(op => this._value.includes(op.value));
-        const unselectedOptions = this._options.filter(op => !this._value.includes(op.value));
+      // This method updates the option selection depending on the values
+    updateSelectedOptions(valueList) {
+        for (let opt of this._options) {
+          let option = this.template.querySelector(`[data-value="${opt.value}"]`);
+          if (valueList.includes(opt.value)) {
+                option.classList.add("slds-is-selected");
+          } else if (option.classList.contains("slds-is-selected")) {
+                option.classList.remove("slds-is-selected");
+          }
+        }
+    }
+
+    sortOptions(options) {
+        if (!options.length) return [];
+        options = this.sort ? [...options].sort((a, b) => a?.label.localeCompare(b?.label)) : options;
+        return options;
+    }
+
+    reorderOptions(options, changeEvent = false) {
+        if (!options.length) return [];
+        if (this.isOpen && !changeEvent) return this.tempOptions;
+        options = this.sortOptions(options);
+        if(!this._value.length) return options;
+        const selectedOptions = options.filter(op => this._value.includes(op.value));
+        const unselectedOptions = options.filter(op => !this._value.includes(op.value));
         selectedOptions.sort((a, b) => a.value.localeCompare(b.value));
-        this._options = [...selectedOptions, ...unselectedOptions];
-        if(!this.isOpen && !this.multiselect) this.highlightCounter = this._options.some(op => this._value.includes(op.value)) ? this._options.findIndex(op => this._value.includes(op.value)) : null;
-        else if(!this.isOpen && this.multiselect) this.highlightCounter = 0;
-        return this._options;
+        options = [...selectedOptions, ...unselectedOptions];
+        return options;
         
     }
 
     booleanValidator(boolValue) {
-        console.log('boolValue', boolValue);
         if( !boolValue || boolValue.toString().toLowerCase() === 'false') return false;
         return true;
     }
 
-    highlightOptions(options) {
-        return options.map((option, index) => {
-            let element = this.template ? this.template.querySelector(`[data-value='${option.value}']`) : null;
-            if(element) {
-                if(index === this.highlightCounter) element?.classList.add('slds-has-focus') || null;
-                else  element?.classList.remove('slds-has-focus') || null;
-            }
-            return {...option,
-            isSelected: this._value.includes(option.value),
-            focused: index === this.highlightCounter ? 'yes' : ''}
-        });
+    getTempOptions() {
+        if(!(this._options && this._options?.length)) return [];
+        const selOpts = this._options.filter(op => this._value.includes(op.value))?.map(op => op?.label || '')|| [];
+        if (!this.isOpen || !this.searchedText || 
+            (!this.multiselect && this.isOpen && 
+            (selOpts?.[0] || '') === this.searchedText)) options = this._options;
+        else return this._options.filter((op) =>
+                      op.label.toLowerCase().includes(this.searchedText.toLowerCase()) ||
+                      this._value.includes(op.value)
+                  );
     }
 
     // Methods to control pills
     // This method handles the removal of the pill
     removePill(event) {
         let deletedValue = event.detail.name;
-        console.log("deletedValue", deletedValue);
         // if (!(this.selectedOptions.length === 1) || this.zeroSelectionAllowed) {
         this.unselectTheOption(deletedValue);
         // }
@@ -262,22 +318,18 @@ export default class SearchableCombobox extends LightningElement {
         );
         let focusedData = this.template.querySelector(`[data-value=${deletedValue}]`);
         focusedData.classList.remove('slds-is-selected');
-        // console.log('focusedData',focusedData.classList);
-        // if(focusedData && focusedData.classList.includes('slds-is-selected') || false) focusedData.classList.remove('slds-is-selected');
         this.fireChange();
-        // this.template
-        // .querySelector(`[data-name="${deletedValue}"]`)
-        // .classList.remove("slds-is-selected");
-        // this.sendValues(this.selectedOptions);
     }
 
     handleMouseEnter(event) {
-        this.template.querySelector('div.slds-has-focus')?.classList?.remove('slds-has-focus');
+        // this.template.querySelector('div.slds-has-focus')?.classList?.remove('slds-has-focus');
+        this.removeAllHighlights();
         this.highlightCounter = parseInt(event.currentTarget.dataset.index);
         event.currentTarget.classList.add('slds-has-focus');
     }
 
     handleMouseLeave(event) {
+        this.highlightCounter = null;
         event.currentTarget.classList.remove('slds-has-focus');
     }
 
@@ -293,6 +345,22 @@ export default class SearchableCombobox extends LightningElement {
         this._cancelBlur = true;
     }
 
+    cancelHighlight() {
+        this._cancelHighlight = true;
+    }
+
+    allowHighlight() {
+        this._cancelHighlight = false;
+    }
+
+    cancelScrolling (){
+        this._cancelScrolling = true;
+    }
+
+    allowScrolling() {
+        this._cancelScrolling = false;
+    }
+
     handleDropdownMouseDown(event) {
         if (event.button === 0) this.cancelBlur();
     }
@@ -303,8 +371,9 @@ export default class SearchableCombobox extends LightningElement {
 
     handleDropdownMouseLeave() {
         this.allowBlur();
+        this.cancelHighlight();
         if(this.multiselect) this.template.querySelector('input.slds-combobox__input')?.focus();
-        else if (!this._inputHasFocus) this.isOpen = false;
+        else if (!this._inputHasFocus) this.handleBlur();
     }
     
     handleDropdownMouseEnter() {
@@ -312,12 +381,11 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     renderedCallback() {
-        if(!this.isRendered && this._value.length) {
-            this._value.forEach(val => {
-                this.template.querySelector(`[data-value=${val}]`)?.classList.add('slds-is-selected');
-            })
-            this.isRendered = true;
+        if(!this._cancelScrolling) this.template.querySelector(`div.slds-is-selected`)?.scrollIntoView({ block: "nearest" });
+        if(!this._isValuesRendered && this._value.length) {
+            this.updateSelectedOptions(this._value);
+            this._isValuesRendered = true;
         }
-        this.template.querySelector(`[data-focused='yes']`)?.scrollIntoView({ block: "nearest" });
+        this._isComponentRendered = true;
     }
 }
