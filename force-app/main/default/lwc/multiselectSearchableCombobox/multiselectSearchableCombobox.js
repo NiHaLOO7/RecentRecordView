@@ -4,11 +4,13 @@ export default class SearchableCombobox extends LightningElement {
     @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
     @api label = 'Subject';
+    @api pillsIcon = '';
     
     searchedText = '';
     isOpen = false;
     highlightCounter = null;
     hasInteracted = false;
+    inputIcon = 'utility:search'
     
     @track _options = [];
     @track  _pendingValue = [];
@@ -25,6 +27,7 @@ export default class SearchableCombobox extends LightningElement {
     _isValuesRendered = false;
     _isComponentRendered = false;
     _cancelScrolling = false;
+    _search = false;
 
     //To do
     // _fieldLevelHelp;
@@ -37,7 +40,6 @@ export default class SearchableCombobox extends LightningElement {
     // _dropdownAlignment;
     // _messageWhenValueMissing;
     // _name;
-    // _search;
     // _disabled;
     // _readOnly;
     // _required;
@@ -78,6 +80,15 @@ export default class SearchableCombobox extends LightningElement {
         this.validateValue();
     }
 
+    @api get allowSearch() {
+        return this.search;
+    }
+
+    set allowSearch(val) {
+        this.search = this.booleanValidator(val);
+        this.inputIcon = this.search ? "utility:search" : "utility:down";
+    }
+
     @api get sort() {
         return this._sort;
     }
@@ -99,6 +110,14 @@ export default class SearchableCombobox extends LightningElement {
         return this._multiselect;
     }
 
+    get inputElement() {
+        return this.template.querySelector('input');
+    }
+
+    get readonly() {
+        return !this.search;
+    }
+
     set multiselect(val) {
         this._multiselect = this.booleanValidator(val);
     }
@@ -113,7 +132,9 @@ export default class SearchableCombobox extends LightningElement {
 
     // Handles the setting up the place holder for the combobox input
     get inputValue() {
-        if (this.isOpen) return this.searchedText;
+        if(!this.readonly) {
+            if (this.isOpen) return this.searchedText;
+        }
         if (!this.value) return '';
         if (this._value.length === 1) return this.selectedOptions[0].label;
         if (this._value.length > 1) return this._value.length + ' options selected';
@@ -136,7 +157,7 @@ export default class SearchableCombobox extends LightningElement {
         return `slds-form-element${this.isInvalid ? ' slds-has-error' : ''}`;
     }
 
-    get classes() {
+    get computedDropdownTriggerClass() {
         return `slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click${this.isOpen ? ' slds-is-open' : ''}`;
     }
 
@@ -163,12 +184,22 @@ export default class SearchableCombobox extends LightningElement {
         this.isOpen = true;
     }
 
-    handleFocus() {
+    preventDefaultAndStopPropagation(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    handleTriggerClick(event) {
+        // event.stopPropagation();
         this.allowScrolling();
-        this._inputHasFocus = true;
         this.tempOptions =  this.reorderOptions(this._options);
         this.isOpen = true;
         if(!this._cancelHighlight) this.highlightOptions(this.tempOptions?.[0]?.value || null);
+        inputElement.focus();
+    }
+
+    handleFocus() {
+        this._inputHasFocus = true;
         this.dispatchEvent(new CustomEvent('focus'));
     }
 
@@ -212,11 +243,13 @@ export default class SearchableCombobox extends LightningElement {
     handleKeyDown(event) {
         this.cancelScrolling();
         const keyMap = {
-            Escape: () => {
+            Escape: (event) => {
+                this.preventDefaultAndStopPropagation(event);
                 this.isOpen = !this.isOpen;
                 this.setHighlightCounter(null);
             },
-            Enter: () => {
+            Enter: (event) => {
+                this.preventDefaultAndStopPropagation(event);
                 if (this.isOpen && this.highlightCounter !== null) {
                     const enterEvent = {
                         currentTarget: { 
@@ -226,15 +259,33 @@ export default class SearchableCombobox extends LightningElement {
                     };
                     this.handleSelect(enterEvent);
                 } else {
-                    this.handleFocus();
+                    this.handleTriggerClick();
                 }
             },
-            ArrowDown: () => this.reorderAndMoveHighlight(1),
-            PageDown: () => this.reorderAndMoveHighlight(1),
-            ArrowUp: () => this.reorderAndMoveHighlight(-1),
-            PageUp: () => this.reorderAndMoveHighlight(-1),
-            Home: () => this.highlightOptions(this.tempOptions[0]?.value || null),
-            End: () => this.highlightOptions(this.tempOptions?.[this.tempOptions.length - 1]?.value || null)
+            ArrowDown: (event) => {
+                this.preventDefaultAndStopPropagation(event);
+                this.reorderAndMoveHighlight(1)}
+                ,
+            PageDown: (event) => {
+                this.preventDefaultAndStopPropagation(event);
+                this.reorderAndMoveHighlight(1)}
+                ,
+            ArrowUp: (event) => {
+                this.preventDefaultAndStopPropagation(event);
+                this.reorderAndMoveHighlight(-1)}
+                ,
+            PageUp: (event) => {
+                this.preventDefaultAndStopPropagation(event);
+                this.reorderAndMoveHighlight(-1)}
+                ,
+            Home: (event) => {
+                this.preventDefaultAndStopPropagation(event);
+                this.highlightOptions(this.tempOptions[0]?.value || null)}
+                ,
+            End: (event) => {
+                this.preventDefaultAndStopPropagation(event);
+                this.highlightOptions(this.tempOptions?.[this.tempOptions.length - 1]?.value || null)
+            }
         };
 
         if (keyMap[event.key]) keyMap[event.key](event);
@@ -242,7 +293,7 @@ export default class SearchableCombobox extends LightningElement {
 
     reorderAndMoveHighlight(step) {
         if(!this.isOpen) {
-            this.handleFocus();
+            this.handleTriggerClick();
             step = 0;
         }
         this.moveHighlight(step);

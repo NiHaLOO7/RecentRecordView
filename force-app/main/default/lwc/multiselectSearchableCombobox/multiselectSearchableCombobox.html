@@ -14,7 +14,11 @@
         </label>
         <div class="slds-form-element__control">
             <div class="slds-combobox_container">
-                <div class={classes}>
+                <div 
+                    class={computedDropdownTriggerClass}
+                    role="combobox"
+                    onclick={handleTriggerClick}
+                    aria-haspopup="listbox">
                     <div
                         class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
                         role="none"
@@ -24,17 +28,19 @@
                                 <lightning-icon
                                     size="x-small"
                                     class="slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default"
-                                    icon-name="utility:search"
+                                    icon-name={inputIcon}
                                 ></lightning-icon>
                                 <input
                                     required={required}
                                     type="text"
+                                    role="textbox"
                                     id="combobox"
                                     class={inputClasses}
                                     value={inputValue}
                                     onkeyup={handleChange}
-                                    onclick={handleFocus}
+                                    onfocus={handleFocus}
                                     onblur={handleBlur}
+                                    readonly={readonly}
                                     onkeydown={handleKeyDown}
                                     oninput={handleInput}
                                     placeholder={placeholder}
@@ -125,7 +131,7 @@
             onremove={removePill}
           >
             <!-- Icon in the pill -->
-            <template if:true={pillIcon}>
+            <template if:true={pillsIcon}>
               <lightning-icon
                 icon-name={pillIcon}
                 alternative-text="icon"
