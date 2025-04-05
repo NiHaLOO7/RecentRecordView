@@ -15,7 +15,7 @@ export default class SearchableCombobox extends LightningElement {
     _dropdownVisible = false;
     highlightCounter = null;
     hasInteracted = false;
-    inputIcon = 'utility:search'
+    _inputIcon = 'utility:search'
     
     @track _options = [];
     @track  _pendingValue = [];
@@ -90,7 +90,7 @@ export default class SearchableCombobox extends LightningElement {
 
     set allowSearch(val) {
         this.search = this.booleanValidator(val);
-        this.inputIcon = this.search ? "utility:search" : "utility:down";
+        this._inputIcon = this.search ? "utility:search" : "utility:down";
     }
 
     @api get sort() {
@@ -190,7 +190,7 @@ export default class SearchableCombobox extends LightningElement {
 
     get inputClasses() {
         return this.classSet(
-            'slds-input slds-combobox__input'
+            'slds-input slds-combobox__input slds-combobox__input-value'
         )
             .add({ 'slds-has-focus': this._dropdownVisible })
             .toString();
@@ -272,7 +272,7 @@ export default class SearchableCombobox extends LightningElement {
             'Escape', 'Enter', 'ArrowDown', 'PageDown',
             'ArrowUp', 'PageUp', 'Home', 'End', 'ArrowLeft', 'ArrowRight'
         ];
-        if (excludedKeys.includes(event.key) /** || !event.target.value.trim()**/ ) return;
+        if (excludedKeys.includes(event.key) || !event.target.value?.trim() ) return;
         this.searchedText = event.target.value;
         this.allowHighlight();
         this.tempOptions =  this.searchedText ? 
@@ -290,10 +290,14 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     handleTriggerClick(event) {
-        // event.stopPropagation();
+        event.stopPropagation();
+        this.toggleDropdownIfOptionExists();
+    }
+
+    toggleDropdownIfOptionExists() {
         this.allowScrolling();
         this.tempOptions =  this.reorderOptions(this._options);
-        this._dropdownVisible = true;
+        if(this.tempOptions?.length) this._dropdownVisible = this.allowSearch ? true : !this._dropdownVisible;
         if(!this._cancelHighlight) this.highlightOptions(this.tempOptions?.[0]?.value || null);
         inputElement.focus();
     }
@@ -317,10 +321,16 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     handleSelect(event) {
+        event.stopPropagation(); 
         let listBoxOption = event.currentTarget.firstChild;
-        if(this.multiselect) this.handleMultipleSelection(listBoxOption);
-        else this.handleSingleSelection(listBoxOption);
-        listBoxOption.classList.toggle("slds-is-selected");
+        this.handleOptionSelection(listBoxOption);    
+    }
+
+
+    handleOptionSelection(event) {
+        if(this.multiselect) this.handleMultipleSelection(event);
+        else this.handleSingleSelection(event);
+        event.classList.toggle("slds-is-selected");
         this.fireChange();
     }
 
@@ -345,20 +355,15 @@ export default class SearchableCombobox extends LightningElement {
         const keyMap = {
             Escape: (event) => {
                 this.preventDefaultAndStopPropagation(event);
-                this._dropdownVisible ?  this.handleBlur() : this.handleTriggerClick();
+                this._dropdownVisible ?  this.handleBlur() : this.toggleDropdownIfOptionExists();
             },
             Enter: (event) => {
                 this.preventDefaultAndStopPropagation(event);
                 if (this._dropdownVisible && this.highlightCounter !== null) {
-                    const enterEvent = {
-                        currentTarget: { 
-                            firstChild : 
-                            this.template.querySelector(`[data-index='${this.highlightCounter}']`)
-                        }
-                    };
-                    this.handleSelect(enterEvent);
+                    const enterEvent = this.template.querySelector(`[data-index='${this.highlightCounter}']`);
+                    this.handleOptionSelection(enterEvent);
                 } else {
-                    this.handleTriggerClick();
+                    this.toggleDropdownIfOptionExists();
                 }
             },
             ArrowDown: (event) => {
@@ -392,7 +397,7 @@ export default class SearchableCombobox extends LightningElement {
 
     reorderAndMoveHighlight(step) {
         if(!this._dropdownVisible) {
-            this.handleTriggerClick();
+            this.toggleDropdownIfOptionExists();
             step = 0;
         }
         this.moveHighlight(step);

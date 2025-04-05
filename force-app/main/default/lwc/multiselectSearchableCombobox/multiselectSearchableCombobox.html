@@ -17,6 +17,7 @@
                 <div 
                     class={computedDropdownTriggerClass}
                     role="combobox"
+                    onclick={handleTriggerClick}
                     aria-haspopup="listbox">
                     <div
                         class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
@@ -27,7 +28,7 @@
                                 <lightning-icon
                                     size="x-small"
                                     class="slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default"
-                                    icon-name={inputIcon}
+                                    icon-name={_inputIcon}
                                 ></lightning-icon>
                                 <input
                                     required={required}
@@ -35,7 +36,6 @@
                                     role="textbox"
                                     id="combobox"
                                     name={name}
-                                    onclick={handleTriggerClick}
                                     autocomplete={aurocomplete}
                                     class={inputClasses}
                                     value={inputValue}
