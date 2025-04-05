@@ -92,7 +92,7 @@
                                         <!-- <template if:true={option.isSelected}> -->
                                             <lightning-icon 
                                                 icon-name="utility:check" 
-                                                class="slds-icon-utility-check slds-current-color slds-listbox__icon-selected slds-icon_container" 
+                                                class="slds-icon-utility-check slds-listbox__icon-selected slds-icon_container" 
                                                 size="x-small" 
                                                 alternative-text="Selected">
                                             </lightning-icon>
@@ -123,7 +123,7 @@
         >{messageWhenInvalid}</div>
     </div>
     <!--Pills -->
-    <template if:true={pills}>
+    <div class="slds-box slds-scrollable_y" style="max-height: 200px;" if:true={pills}>
         <template for:each={selectedOptions} for:item="option">
           <lightning-pill
             key={option.value}
@@ -142,5 +142,5 @@
             </template>
           </lightning-pill>
         </template>
-      </template>
+    </div>
 </template>

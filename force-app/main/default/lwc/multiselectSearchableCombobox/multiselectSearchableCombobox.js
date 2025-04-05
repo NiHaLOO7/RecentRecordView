@@ -85,12 +85,12 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     @api get allowSearch() {
-        return this.search;
+        return this._search;
     }
 
     set allowSearch(val) {
-        this.search = this.booleanValidator(val);
-        this._inputIcon = this.search ? "utility:search" : "utility:down";
+        this._search = this.booleanValidator(val);
+        this._inputIcon = this._search ? "utility:search" : "utility:down";
     }
 
     @api get sort() {
@@ -142,7 +142,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     get readonly() {
-        return !this.search;
+        return !this._search;
     }
 
     get selectedOptions () {
@@ -165,7 +165,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     @api get pills() {
-        return this._pills && this.multiselect;
+        return this._pills && this.multiselect && this._value?.length;
     }
 
     set pills(val) {
@@ -173,7 +173,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     get isInvalid() {
-        return this.required && this.hasInteracted && (!this._value?.length || true);
+        return this.required && this.hasInteracted && !this._value?.length;
     }
 
     get formElementClasses() {
@@ -521,6 +521,7 @@ export default class SearchableCombobox extends LightningElement {
     removePill(event) {
         if(this.disabled) return;
         let deletedValue = event.detail.name;
+        this.hasInteracted = true;
         this.unselectTheOption(deletedValue);
     }
 
@@ -611,7 +612,13 @@ export default class SearchableCombobox extends LightningElement {
             this.updateSelectedOptions(this._value);
             this._isValuesRendered = true;
         }
-        this._isComponentRendered = true;
+        if(!this._isComponentRendered && !this._search) {
+            const input = this.template.querySelector('input.slds-combobox__input');
+            if (input) {
+                input.style.cursor = 'pointer';
+                this._isComponentRendered = true;
+            }
+        }
         this.setHighlightCounter();
     }
 }
