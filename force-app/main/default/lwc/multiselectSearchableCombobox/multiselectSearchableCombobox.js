@@ -240,14 +240,6 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         return this.variant === utils.VARIANT.LABEL_HIDDEN;
     }
     
-    get isLabelStacked() {
-        return this.variant === utils.VARIANT.LABEL_STACKED;
-    }
-    
-    get isLabelInline() {
-        return this.variant === utils.VARIANT.LABEL_INLINE;
-    }
-    
     get computedLabelClass() {
         return utils.classSet('slds-form-element__label')
             .add({ 'slds-assistive-text': this.isLabelHidden })
