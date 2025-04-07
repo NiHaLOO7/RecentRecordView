@@ -1,8 +1,7 @@
 <template>
-    <div class={formElementClasses}>
+    <div class={computedFormElementClasses}>
         <label
-            class="slds-form-element__label"
-            for="combobox"
+            class={computedLabelClass}
             id="combobox-label"
         >
             <abbr
@@ -12,6 +11,10 @@
             >* </abbr>
             {label}
         </label>
+        <lightning-helptext
+            if:true={_fieldLevelHelp}
+            content={_fieldLevelHelp}
+        ></lightning-helptext>
         <div class="slds-form-element__control">
             <div class="slds-combobox_container">
                 <div 
@@ -34,10 +37,10 @@
                                     required={required}
                                     type="text"
                                     role="textbox"
-                                    id="combobox"
+                                    id="input"
                                     name={name}
                                     autocomplete={aurocomplete}
-                                    class={inputClasses}
+                                    class={computedInputClasses}
                                     value={inputValue}
                                     onkeyup={handleChange}
                                     onfocus={handleFocus}
@@ -105,7 +108,7 @@
                                         <template if:true={showValues}>
                                         <br />
                                             <span class="slds-text-color_weak slds-text-body_small">
-                                                {option.additionalInfo}
+                                                {option.value}
                                             </span>
                                         </template>
                                     </span>
@@ -118,9 +121,10 @@
         </div>
         <div
             class="slds-form-element__help"
-            if:true={isInvalid}
+            if:true={_helpMessage}
+            data-help-text
             id="form-error"
-        >{messageWhenInvalid}</div>
+        >{_helpMessage}</div>
     </div>
     <!--Pills -->
     <div class="slds-box slds-scrollable_y" style="max-height: 200px;" if:true={pills}>

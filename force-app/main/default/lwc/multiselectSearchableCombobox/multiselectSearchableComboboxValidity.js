@@ -1,331 +1,117 @@
-const labelBadInput = "Enter a valid value.";
-const labelPatternMismatch = "Your entry does not match the allowed pattern.";
-const labelRangeOverflow = "The number is too high.";
-const labelRangeUnderflow = "The number is too low.";
-const labelStepMismatch = "Your entry isn't a valid increment.";
-const labelTooLong = "Your entry is too long.";
-const labelTooShort = "Your entry is too short.";
-const labelTypeMismatch = "You have entered an invalid format.";
-const labelValueMissing = "Complete this field.";
-
-const constraintsSortedByPriority = [
-    'customError',
-    'badInput',
-    'patternMismatch',
-    'rangeOverflow',
-    'rangeUnderflow',
-    'stepMismatch',
-    'tooLong',
-    'tooShort',
-    'typeMismatch',
-    'valueMissing'
-];
-
 const defaultLabels = {
-    badInput: labelBadInput,
-    customError: labelBadInput,
-    patternMismatch: labelPatternMismatch,
-    rangeOverflow: labelRangeOverflow,
-    rangeUnderflow: labelRangeUnderflow,
-    stepMismatch: labelStepMismatch,
-    tooLong: labelTooLong,
-    tooShort: labelTooShort,
-    typeMismatch: labelTypeMismatch,
-    valueMissing: labelValueMissing
+    badInput: "Enter a valid value.",
+    customError: "Enter a valid value.",
+    // patternMismatch: "Your entry does not match the allowed pattern.",
+    // rangeOverflow: "The number is too high.",
+    // rangeUnderflow: "The number is too low.",
+    // stepMismatch: "Your entry isn't a valid increment.",
+    // tooLong: "Your entry is too long.",
+    // tooShort: "Your entry is too short.",
+    // typeMismatch: "You have entered an invalid format.",
+    valueMissing: "Complete this field."
 };
 
+const constraintsPriority = [
+    'customError', 
+    'badInput', 
+    // 'patternMismatch',
+    // 'rangeOverflow', 'rangeUnderflow', 'stepMismatch',
+    // 'tooLong', 'tooShort', 'typeMismatch',
+     'valueMissing'
+];
+
 function resolveBestMatch(validity) {
-    let validityState;
-    if (validity && validity.valid === false) {
-        validityState = 'badInput';
-        constraintsSortedByPriority.some((stateName) => {
-            if (validity[stateName] === true) {
-                validityState = stateName;
-                return true;
-            }
-            return false;
-        });
+    if (validity && !validity.valid) {
+        return constraintsPriority.find((key) => validity[key]) || 'badInput';
     }
-    return validityState;
+    return null;
 }
 
-function assert(condition, message) {}
-
-function computeConstraint(valueProvider, constraint) {
-    const provider = valueProvider[constraint];
-    if (typeof provider === 'function') {
-        return provider();
-    }
-    if (typeof provider === 'boolean') {
-        return provider;
-    }
-    return false;
+function computeConstraint(provider, key) {
+    const val = provider[key];
+    return typeof val === 'function' ? val() : !!val;
 }
 
-function newValidityState(constraintsProvider) {
-    class ValidityState {
-        get valueMissing() {
-            return computeConstraint(constraintsProvider, 'valueMissing');
-        }
-
-        get typeMismatch() {
-            return computeConstraint(constraintsProvider, 'typeMismatch');
-        }
-
-        get patternMismatch() {
-            return computeConstraint(constraintsProvider, 'patternMismatch');
-        }
-
-        get tooLong() {
-            return computeConstraint(constraintsProvider, 'tooLong');
-        }
-
-        get tooShort() {
-            return computeConstraint(constraintsProvider, 'tooShort');
-        }
-
-        get rangeUnderflow() {
-            return computeConstraint(constraintsProvider, 'rangeUnderflow');
-        }
-
-        get rangeOverflow() {
-            return computeConstraint(constraintsProvider, 'rangeOverflow');
-        }
-
-        get stepMismatch() {
-            return computeConstraint(constraintsProvider, 'stepMismatch');
-        }
-
-        get customError() {
-            return computeConstraint(constraintsProvider, 'customError');
-        }
-
-        get badInput() {
-            return computeConstraint(constraintsProvider, 'badInput');
-        }
-
+function createValidity(constraints) {
+    return {
+        get valueMissing() { return computeConstraint(constraints, 'valueMissing'); },
+        // get typeMismatch() { return computeConstraint(constraints, 'typeMismatch'); },
+        // get patternMismatch() { return computeConstraint(constraints, 'patternMismatch'); },
+        // get tooLong() { return computeConstraint(constraints, 'tooLong'); },
+        // get tooShort() { return computeConstraint(constraints, 'tooShort'); },
+        // get rangeUnderflow() { return computeConstraint(constraints, 'rangeUnderflow'); },
+        // get rangeOverflow() { return computeConstraint(constraints, 'rangeOverflow'); },
+        // get stepMismatch() { return computeConstraint(constraints, 'stepMismatch'); },
+        get customError() { return computeConstraint(constraints, 'customError'); },
+        get badInput() { return computeConstraint(constraints, 'badInput'); },
         get valid() {
             return !(
-                this.valueMissing ||
-                this.typeMismatch ||
-                this.patternMismatch ||
-                this.tooLong ||
-                this.tooShort ||
-                this.rangeUnderflow ||
-                this.rangeOverflow ||
-                this.stepMismatch ||
-                this.customError ||
-                this.badInput
+                this.valueMissing 
+                // || this.typeMismatch || this.patternMismatch ||
+                // this.tooLong || this.tooShort || this.rangeUnderflow ||
+                // this.rangeOverflow || this.stepMismatch 
+                || this.customError || this.badInput
             );
         }
-    }
-
-    return new ValidityState();
+    };
 }
 
-export function buildSyntheticValidity(constraintProvider) {
-    return Object.freeze(newValidityState(constraintProvider));
-}
-
-export function getErrorMessage(validity, labelMap) {
+export function getErrorMessage(validity, labelMap = {}) {
     const key = resolveBestMatch(validity);
-    if (key) {
-        return labelMap[key] ? labelMap[key] : defaultLabels[key];
-    }
-    return '';
+    return key ? (labelMap[key] || defaultLabels[key]) : '';
 }
 
 export class FieldConstraintApi {
-    constructor(inputComponentProvider, constraintProviders) {
-        assert(typeof inputComponentProvider === 'function');
-        this._inputComponentProvider = inputComponentProvider;
-        this._constraintsProvider = Object.assign({}, constraintProviders);
-        if (!this._constraintsProvider.customError) {
-            this._constraintsProvider.customError = () =>
-                typeof this._customValidityMessage === 'string' &&
-                this._customValidityMessage !== '';
-        }
+    constructor(componentProvider, constraints) {
+        this._getComponent = componentProvider;
+        this._constraints = {
+            ...constraints,
+            customError: () =>
+                typeof this._customMessage === 'string' && this._customMessage !== ''
+        };
+    }
+
+    get inputComponent() {
+        return this._element ||= this._getComponent();
     }
 
     get validity() {
-        if (!this._constraint) {
-            this._constraint = buildSyntheticValidity(
-                this._constraintsProvider
-            );
-        }
-
-        return this._constraint;
+        return this._validity ||= createValidity(this._constraints);
     }
 
     checkValidity() {
-        const isValid = this.validity.valid;
-        if (!isValid) {
-            if (this.inputComponent) {
-                this.inputComponent.dispatchEvent(
-                    new CustomEvent('invalid', { cancellable: true })
-                );
-            }
+        const valid = this.validity.valid;
+        if (!valid) {
+            this.inputComponent?.dispatchEvent(new CustomEvent('invalid', { cancellable: true }));
         }
-        return isValid;
+        return valid;
     }
 
     reportValidity(callback) {
         const valid = this.checkValidity();
-
-        if (this.inputComponent) {
-            this.inputComponent.classList.toggle('slds-has-error', !valid);
-
-            if (callback) {
-                callback(this.validationMessage);
-            }
-        }
-
+        this.inputComponent?.classList.toggle('slds-has-error', !valid);
+        callback?.(this.validationMessage);
         return valid;
     }
 
     setCustomValidity(message) {
-        this._customValidityMessage = message;
+        this._customMessage = message;
+        this._validity = null; // force re-evaluation
     }
 
     get validationMessage() {
+        const c = this.inputComponent;
         return getErrorMessage(this.validity, {
-            customError: this._customValidityMessage,
-            badInput: this.inputComponent.messageWhenBadInput,
-            patternMismatch: this.inputComponent.messageWhenPatternMismatch,
-            rangeOverflow: this.inputComponent.messageWhenRangeOverflow,
-            rangeUnderflow: this.inputComponent.messageWhenRangeUnderflow,
-            stepMismatch: this.inputComponent.messageWhenStepMismatch,
-            tooShort: this.inputComponent.messageWhenTooShort,
-            tooLong: this.inputComponent.messageWhenTooLong,
-            typeMismatch: this.inputComponent.messageWhenTypeMismatch,
-            valueMissing: this.inputComponent.messageWhenValueMissing
+            customError: this._customMessage,
+            badInput: c?.messageWhenBadInput,
+            // patternMismatch: c?.messageWhenPatternMismatch,
+            // rangeOverflow: c?.messageWhenRangeOverflow,
+            // rangeUnderflow: c?.messageWhenRangeUnderflow,
+            // stepMismatch: c?.messageWhenStepMismatch,
+            // tooShort: c?.messageWhenTooShort,
+            // tooLong: c?.messageWhenTooLong,
+            // typeMismatch: c?.messageWhenTypeMismatch,
+            valueMissing: c?.messageWhenValueMissing
         });
-    }
-
-    get inputComponent() {
-        if (!this._inputComponentElement) {
-            this._inputComponentElement = this._inputComponentProvider();
-        }
-        return this._inputComponentElement;
-    }
-}
-
-export class FieldConstraintApiWithProxyInput {
-    constructor(inputComponent, overrides = {}, inputElementName = 'input') {
-        this._inputComponent = inputComponent;
-        this._overrides = overrides;
-        this._proxyInput = document.createElement(inputElementName);
-    }
-
-    setInputAttributes(attributes) {
-        this._attributes = attributes;
-
-        this._attributeUpdater = (attributeNames) => {
-            if (!attributes) {
-                return;
-            }
-            if (typeof attributeNames === 'string') {
-                this._setAttribute(
-                    attributeNames,
-                    attributes[attributeNames]()
-                );
-            } else {
-                attributeNames.forEach((attributeName) => {
-                    this._setAttribute(
-                        attributeName,
-                        attributes[attributeName]()
-                    );
-                });
-            }
-        };
-        return this._attributeUpdater;
-    }
-
-    get validity() {
-        return this._constraintApi.validity;
-    }
-
-    checkValidity() {
-        return this._constraintApi.checkValidity();
-    }
-
-    reportValidity(callback) {
-        return this._constraintApi.reportValidity(callback);
-    }
-
-    setCustomValidity(message) {
-        this._constraintApi.setCustomValidity(message);
-        this._proxyInput.setCustomValidity(message);
-    }
-
-    get validationMessage() {
-        return this._constraintApi.validationMessage;
-    }
-
-    _setAttribute(attributeName, value) {
-        if (value !== null && value !== undefined && value !== false) {
-            if (attributeName === 'value') {
-                if (this._proxyInput.type === 'file') {
-                    return;
-                }
-                this._proxyInput.value = value;
-            } else {
-                this._proxyInput.setAttribute(attributeName, value);
-            }
-        } else {
-            this._removeAttribute(attributeName);
-        }
-    }
-
-    _removeAttribute(attributeName) {
-        this._proxyInput.removeAttribute(attributeName);
-    }
-
-    get _constraintApi() {
-        if (!this._privateConstraintApi) {
-            this._updateAllAttributes();
-
-            const computeConstraintWithProxyInput = (constraintName) => {
-                const constraintOverride = this._overrides[constraintName];
-
-                const isDisabledOrReadOnly =
-                    this._proxyInput.hasAttribute('disabled') ||
-                    this._proxyInput.hasAttribute('readonly');
-
-                if (typeof constraintOverride === 'function') {
-                    return !isDisabledOrReadOnly && constraintOverride();
-                }
-
-                return (
-                    !isDisabledOrReadOnly &&
-                    this._proxyInput.validity[constraintName]
-                );
-            };
-            const constraintsProvider = constraintsSortedByPriority.reduce(
-                (provider, constraint) => {
-                    provider[constraint] = computeConstraintWithProxyInput.bind(
-                        this,
-                        constraint
-                    );
-
-                    return provider;
-                },
-                {}
-            );
-
-            this._privateConstraintApi = new FieldConstraintApi(
-                this._inputComponent,
-                constraintsProvider
-            );
-        }
-        return this._privateConstraintApi;
-    }
-
-    _updateAllAttributes() {
-        if (this._attributes) {
-            Object.entries(this._attributes).forEach(([key, valueFunction]) => {
-                this._setAttribute(key, valueFunction());
-            });
-        }
     }
 }

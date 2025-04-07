@@ -7,8 +7,14 @@ const EXCLUDE_KEYS = [
     'Escape', 'Enter', 'ArrowDown', 'PageDown',
     'ArrowUp', 'PageUp', 'Home', 'End', 'ArrowLeft', 'ArrowRight'
 ];
+
+const ARIA_LABELLEDBY = 'aria-labelledby';
+const ARIA_DESCRIBEDBY = 'aria-describedby';
+const ARIA_LABEL = 'aria-label';
+const ARIA_ACTIVEDESCENDANT = 'aria-activedescendant';
+
 export default class MultiselectSearchableCombobox extends LightningElement {
-    @api messageWhenInvalid = 'Please select a valid value';
+    // @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
     @api label = 'Subject';
     @api pillsIcon = '';
@@ -16,6 +22,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     @api readonly = false;
     @api autocomplete = 'off'
     @api dropdownAlignment = 'left';
+    @api messageWhenValueMissing;
     
     searchedText = '';
     highlightCounter = null;
@@ -25,10 +32,12 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     @track _options = [];
     @track  _pendingValue = [];
     @track _value = [];
-    @track _dropdownHeight = 'standard';
-
+    
+    _helpMessage;
+    _variant;
     _inputIcon = 'utility:search'
     _multiselect = false;
+    _dropdownHeight = 'standard';
     _dropdownVisible = false;
     _sort = false;
     _showValues = false;
@@ -41,35 +50,16 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     _cancelScrolling = false;
     _search = false;
     _disabled = false;
+    _ariaLabel = '';
+    _ariaLabelledBy='';
+    _ariaDescribedBy='';
+    _activeElementDomId;
+    _fieldLevelHelp = '';
 
 
     //To do
-    // _fieldLevelHelp;
-    // /** Specifies where the drop-down list is aligned with or anchored to
-    // the selection field. By default the list is aligned with the
-    // selection field at the top left so the list opens down. Use bottom-left
-    // to make the selection field display at the bottom so the list opens
-    // above it. Use auto to let the component determine where to open
-    // the list based on space available. **/
-    // _messageWhenValueMissing;
-    // _required;
     // _spinnerActive; --no
-    // _validity;
-    // _variant;
-
-
-    //To Do Methods => 
-    // blur                             - done
-    // checkValidity
-    // focus                            - done
-    // reportValidity
-    // setCustomValidity
-    // showHelpMessageIfInvalid
-    //  setCustomValidity = 
-        // Name => message	
-        // Type => unknown	
-        // Description => The string that describes the error. If message is an empty string, the error messages reset.
-	
+    
     /*** GETTERS & SETTERS ***/
     @api get value() {
         return this._value;
@@ -95,7 +85,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     }
 
     set allowSearch(val) {
-        this._search = utils.booleanValidator(val);
+        this._search = utils.normalizeBoolean(val);
         this._inputIcon = this._search ? "utility:search" : "utility:down";
     }
 
@@ -104,7 +94,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     }
 
     set sort(val) {
-        this._sort = utils.booleanValidator(val);
+        this._sort = utils.normalizeBoolean(val);
         this._options = this.sortOptions(this._options);
     }
 
@@ -113,7 +103,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     }
 
     set showValues(val) {
-        this._showValues = utils.booleanValidator(val);
+        this._showValues = utils.normalizeBoolean(val);
     }
 
     @api get multiselect() {
@@ -121,7 +111,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     }
 
     set multiselect(val) {
-        this._multiselect = utils.booleanValidator(val);
+        this._multiselect = utils.normalizeBoolean(val);
     } 
 
     @api get disabled() {
@@ -129,8 +119,17 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     }
 
     set disabled(val) {
-        this._disabled = utils.booleanValidator(val);
+        this._disabled = utils.normalizeBoolean(val);
     } 
+
+    @api get variant() {
+        return this._variant || VARIANT.STANDARD;
+    }
+
+    set variant(value) {
+        this._variant = utils.normalizeVariant(value);
+        this.updateClassList();
+    }
 
     @api get dropdownHeight() {
         return this._dropdownHeight;
@@ -141,6 +140,61 @@ export default class MultiselectSearchableCombobox extends LightningElement {
             fallbackValue: 'standard',
             validValues: ['standard', 'small']
         });
+    }
+
+    @api get fieldLevelHelp() {
+        return this._fieldLevelHelp;
+    }
+
+    set fieldLevelHelp(value) {
+        this._fieldLevelHelp = value;
+    }
+
+    @api get ariaLabelledBy() {
+        return this._ariaLabelledBy;
+    }
+
+    set ariaLabelledBy(labelledBy) {
+        this._ariaLabelledBy = labelledBy;
+        this.synchronizeAriaAttr();
+    }
+
+    @api get ariaLabel() {
+        return this._ariaLabel;
+    }
+
+    set ariaLabel(label) {
+        this._ariaLabel = label;
+        this.synchronizeAriaAttr();
+    }
+
+    @api get ariaDescribedBy() {
+        return this._ariaDescribedBy;
+    }
+
+    set ariaDescribedBy(describedBy) {
+        this._ariaDescribedBy = describedBy;
+        this.synchronizeAriaAttr();
+    }
+
+    get inputLabelledById() {
+        return utils.getCurrentElementId(this._inputLabelledBy);
+    }
+
+    get computedAriaDescribedBy() {
+        const describedByElements = [];
+        if (this._helpMessage) {
+            const helpText = this.template.querySelector('[data-help-text]');
+            describedByElements.push(helpText);
+        }
+        if (typeof this.ariaDescribedBy === 'string') {
+            describedByElements.push(this.ariaDescribedBy);
+        }
+        const ariaValues = [];
+        describedByElements.forEach((element) => {
+            ariaValues.push(utils.getCurrentElementId(element));
+        });
+        return utils.normalizeAriaAttribute(ariaValues);
     }
 
     get inputElement() {
@@ -175,14 +229,32 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     }
 
     set pills(val) {
-        this._pills = utils.booleanValidator(val);
+        this._pills = utils.normalizeBoolean(val);
     }
 
     get isInvalid() {
         return this.required && this.hasInteracted && !this._value?.length;
     }
 
-    get formElementClasses() {
+    get isLabelHidden() {
+        return this.variant === utils.VARIANT.LABEL_HIDDEN;
+    }
+    
+    get isLabelStacked() {
+        return this.variant === utils.VARIANT.LABEL_STACKED;
+    }
+    
+    get isLabelInline() {
+        return this.variant === utils.VARIANT.LABEL_INLINE;
+    }
+    
+    get computedLabelClass() {
+        return utils.classSet('slds-form-element__label')
+            .add({ 'slds-assistive-text': this.isLabelHidden })
+            .toString();
+    }
+
+    get computedFormElementClasses() {
         return utils.classSet(
             'slds-form-element'
         )
@@ -198,24 +270,12 @@ export default class MultiselectSearchableCombobox extends LightningElement {
             .toString();
     }
 
-    get inputClasses() {
+    get computedInputClasses() {
         return utils.classSet(
             'slds-input slds-combobox__input slds-combobox__input-value'
         )
             .add({ 'slds-has-focus': this._dropdownVisible })
             .toString();
-    }
-
-    get _constraint() {
-        if (!this._constraintApi) {
-            this._constraintApi = new FieldConstraintApi(() => this, {
-                valueMissing: () =>
-                    !this.disabled &&
-                    this.required &&
-                    utils.isEmptyString(this.selectedValue)
-            });
-        }
-        return this._constraintApi;
     }
 
     get computedDropdownClass() {
@@ -250,6 +310,18 @@ export default class MultiselectSearchableCombobox extends LightningElement {
                     alignment === 'bottom-left'
             })
             .toString();
+    }
+
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled &&
+                    this.required &&
+                    utils.isEmptyList(this._value)
+            });
+        }
+        return this._constraintApi;
     }
 
     /*** API METHODS ***/
@@ -445,6 +517,8 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         this.setHighlightCounter(parseInt(currentData.dataset.index, 10));
         currentData.classList.add('slds-has-focus');
         currentData.scrollIntoView({ block: "nearest" });
+        this._activeElementDomId = currentData.id;
+        this.synchronizeAriaAttr();
     }
 
     setHighlightCounter(value) {
@@ -456,6 +530,8 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         this.template.querySelectorAll('.slds-has-focus')?.forEach(data =>{ 
             data?.classList?.remove('slds-has-focus');
         })
+        this._activeElementDomId = null;
+
     }
 
     validateValue() {
@@ -589,6 +665,41 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         if(this.multiselect) this.cancelBlur();
     }
 
+    handleComboboxReady(e) {
+        this._labelForId = e.detail.id;
+    }
+
+    synchronizeAriaAttr() {
+        const input = this.template.querySelector('input');
+        const label = this.template.querySelector('label');
+        if (input) {
+            utils.synchronizeAttrs(input, {
+                [ARIA_LABELLEDBY]: this.inputLabelledById,
+                [ARIA_DESCRIBEDBY]: this.computedAriaDescribedBy,
+                [ARIA_ACTIVEDESCENDANT]: this._activeElementDomId,
+                [ARIA_LABEL]: this.inputLabel
+            });
+            if(!label) return;
+            utils.synchronizeAttrs(label, {
+                for: input.id
+            });
+        }
+        
+    }
+
+    updateClassList() {
+        utils.classListMutation(this.classList, {
+            'slds-form-element_stacked': this.variant === utils.VARIANT.LABEL_STACKED,
+            'slds-form-element_horizontal':
+                this.variant === utils.VARIANT.LABEL_INLINE
+        });
+    }
+
+    connectedCallback() {
+        this.classList.add('slds-form-element');
+        this.updateClassList();
+    }
+
     renderedCallback() {
         if(!this._isValuesRendered && this._value.length) {
             this.updateSelectedOptions(this._value);
@@ -602,5 +713,6 @@ export default class MultiselectSearchableCombobox extends LightningElement {
             }
         }
         this.setHighlightCounter();
+        this.synchronizeAriaAttr();
     }
 }
