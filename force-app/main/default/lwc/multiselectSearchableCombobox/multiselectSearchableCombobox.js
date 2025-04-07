@@ -1,7 +1,13 @@
 import { LightningElement, api, track } from 'lwc';
+import utils from './multiselectSearchableComboboxUtils';
+import {FieldConstraintApi}  from './multiselectSearchableComboboxValidity';
 
 const VIEWPORT_HEIGHT_SMALL = 834;
-export default class SearchableCombobox extends LightningElement {
+const EXCLUDE_KEYS = [
+    'Escape', 'Enter', 'ArrowDown', 'PageDown',
+    'ArrowUp', 'PageUp', 'Home', 'End', 'ArrowLeft', 'ArrowRight'
+];
+export default class MultiselectSearchableCombobox extends LightningElement {
     @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
     @api label = 'Subject';
@@ -12,18 +18,18 @@ export default class SearchableCombobox extends LightningElement {
     @api dropdownAlignment = 'left';
     
     searchedText = '';
-    _dropdownVisible = false;
     highlightCounter = null;
     hasInteracted = false;
-    _inputIcon = 'utility:search'
     
+    @track tempOptions = [];
     @track _options = [];
     @track  _pendingValue = [];
     @track _value = [];
-    @track tempOptions = [];
     @track _dropdownHeight = 'standard';
 
+    _inputIcon = 'utility:search'
     _multiselect = false;
+    _dropdownVisible = false;
     _sort = false;
     _showValues = false;
     _pills = false;  
@@ -89,7 +95,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set allowSearch(val) {
-        this._search = this.booleanValidator(val);
+        this._search = utils.booleanValidator(val);
         this._inputIcon = this._search ? "utility:search" : "utility:down";
     }
 
@@ -98,7 +104,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set sort(val) {
-        this._sort = this.booleanValidator(val);
+        this._sort = utils.booleanValidator(val);
         this._options = this.sortOptions(this._options);
     }
 
@@ -107,7 +113,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set showValues(val) {
-        this._showValues = this.booleanValidator(val);
+        this._showValues = utils.booleanValidator(val);
     }
 
     @api get multiselect() {
@@ -115,7 +121,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set multiselect(val) {
-        this._multiselect = this.booleanValidator(val);
+        this._multiselect = utils.booleanValidator(val);
     } 
 
     @api get disabled() {
@@ -123,7 +129,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set disabled(val) {
-        this._disabled = this.booleanValidator(val);
+        this._disabled = utils.booleanValidator(val);
     } 
 
     @api get dropdownHeight() {
@@ -131,7 +137,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set dropdownHeight(height) {
-        this._dropdownHeight = this.normalizeString(height, {
+        this._dropdownHeight = utils.normalizeString(height, {
             fallbackValue: 'standard',
             validValues: ['standard', 'small']
         });
@@ -169,7 +175,7 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     set pills(val) {
-        this._pills = this.booleanValidator(val);
+        this._pills = utils.booleanValidator(val);
     }
 
     get isInvalid() {
@@ -177,11 +183,15 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     get formElementClasses() {
-        return `slds-form-element${this.isInvalid ? ' slds-has-error' : ''}`;
+        return utils.classSet(
+            'slds-form-element'
+        )
+            .add({ 'slds-has-error': this.isInvalid  })
+            .toString();
     }
 
     get computedDropdownTriggerClass() {
-        return this.classSet(
+        return utils.classSet(
             'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click'
         )
             .add({ 'slds-is-open': this._dropdownVisible })
@@ -189,11 +199,23 @@ export default class SearchableCombobox extends LightningElement {
     }
 
     get inputClasses() {
-        return this.classSet(
+        return utils.classSet(
             'slds-input slds-combobox__input slds-combobox__input-value'
         )
             .add({ 'slds-has-focus': this._dropdownVisible })
             .toString();
+    }
+
+    get _constraint() {
+        if (!this._constraintApi) {
+            this._constraintApi = new FieldConstraintApi(() => this, {
+                valueMissing: () =>
+                    !this.disabled &&
+                    this.required &&
+                    utils.isEmptyString(this.selectedValue)
+            });
+        }
+        return this._constraintApi;
     }
 
     get computedDropdownClass() {
@@ -213,7 +235,7 @@ export default class SearchableCombobox extends LightningElement {
             }
         }
 
-        return this.classSet(
+        return utils.classSet(
             `slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid ${dropdownLengthClass}`
         )
             .add({
@@ -230,49 +252,37 @@ export default class SearchableCombobox extends LightningElement {
             .toString();
     }
 
-    classSet(baseClasses) {
-        const proto = {
-            add(classes) {
-                if (typeof classes === 'string') {
-                    classes.split(' ').forEach(cls => {
-                        if (cls.trim()) this[cls.trim()] = true;
-                    });
-                } else if (typeof classes === 'object' && classes !== null) {
-                    Object.entries(classes).forEach(([key, val]) => {
-                        if (val) this[key] = true;
-                    });
-                }
-                return this;
-            },
-            toString() {
-                return Object.keys(this)
-                    .filter(key => this[key])
-                    .join(' ');
-            }
-        };
-    
-        let base = {};
-        if (typeof baseClasses === 'string') {
-            baseClasses.split(' ').forEach(cls => {
-                if (cls.trim()) base[cls.trim()] = true;
-            });
-        } else if (typeof baseClasses === 'object' && baseClasses !== null) {
-            Object.entries(baseClasses).forEach(([key, val]) => {
-                if (val) base[key] = true;
-            });
-        }
-    
-        return Object.assign(Object.create(proto), base);
+    /*** API METHODS ***/
+    @api get validity() {
+        return this._constraint.validity;
+    }
+
+    @api
+    checkValidity() {
+        return this._constraint.checkValidity();
+    }
+
+    @api
+    reportValidity() {
+        return this._constraint.reportValidity((message) => {
+            this._helpMessage = message;
+        });
+    }
+
+    @api
+    setCustomValidity(message) {
+        this._constraint.setCustomValidity(message);
+    }
+
+    @api
+    showHelpMessageIfInvalid() {
+        this.reportValidity();
     }
 
 
     /*** EVENT HANDLERS ***/
     handleChange(event) {
-        const excludedKeys = [
-            'Escape', 'Enter', 'ArrowDown', 'PageDown',
-            'ArrowUp', 'PageUp', 'Home', 'End', 'ArrowLeft', 'ArrowRight'
-        ];
-        if (excludedKeys.includes(event.key) || !event.target.value?.trim() ) return;
+        if (EXCLUDE_KEYS.includes(event.key) || !event.target.value?.trim() ) return;
         this.searchedText = event.target.value;
         this.allowHighlight();
         this.tempOptions =  this.searchedText ? 
@@ -458,16 +468,6 @@ export default class SearchableCombobox extends LightningElement {
         }
     }
 
-    normalizeString(value, config = {}) {
-        const { fallbackValue = '', validValues, toLowerCase = true } = config;
-        let normalized = (typeof value === 'string' && value.trim()) || '';
-        normalized = toLowerCase ? normalized.toLowerCase() : normalized;
-        if (validValues && validValues.indexOf(normalized) === -1) {
-            normalized = fallbackValue;
-        }
-        return normalized;
-    }
-
       // This method updates the option selection depending on the values
     updateSelectedOptions(valueList) {
         for (let opt of this._options) {
@@ -497,11 +497,6 @@ export default class SearchableCombobox extends LightningElement {
         options = [...selectedOptions, ...unselectedOptions];
         return options;
         
-    }
-
-    booleanValidator(boolValue) {
-        if( !boolValue || boolValue.toString().toLowerCase() === 'false') return false;
-        return true;
     }
 
     getTempOptions() {
@@ -594,20 +589,7 @@ export default class SearchableCombobox extends LightningElement {
         if(this.multiselect) this.cancelBlur();
     }
 
-    // dispatchReadyEvent() {
-    //     this.dispatchEvent(
-    //         new CustomEvent('ready', {
-    //             detail: {
-    //                 // id: this.inputId,
-    //                 name: this.name
-    //             }
-    //         })
-    //     );
-    // }
-
     renderedCallback() {
-        // this.dispatchReadyEvent();
-        // if(!this._cancelScrolling) this.template.querySelector(`div.slds-is-selected`)?.scrollIntoView({ block: "nearest" });
         if(!this._isValuesRendered && this._value.length) {
             this.updateSelectedOptions(this._value);
             this._isValuesRendered = true;
