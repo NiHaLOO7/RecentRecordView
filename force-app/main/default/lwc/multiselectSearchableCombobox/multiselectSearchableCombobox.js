@@ -1,27 +1,17 @@
 import { LightningElement, api, track } from 'lwc';
 import utils from './multiselectSearchableComboboxUtils';
+import CONSTANTS from './multiselectSearchableComboboxConstants';
 import {FieldConstraintApi}  from './multiselectSearchableComboboxValidity';
-
-const VIEWPORT_HEIGHT_SMALL = 834;
-const EXCLUDE_KEYS = [
-    'Escape', 'Enter', 'ArrowDown', 'PageDown',
-    'ArrowUp', 'PageUp', 'Home', 'End', 'ArrowLeft', 'ArrowRight'
-];
-
-const ARIA_LABELLEDBY = 'aria-labelledby';
-const ARIA_DESCRIBEDBY = 'aria-describedby';
-const ARIA_LABEL = 'aria-label';
-const ARIA_ACTIVEDESCENDANT = 'aria-activedescendant';
 
 export default class MultiselectSearchableCombobox extends LightningElement {
     // @api messageWhenInvalid = 'Please select a valid value';
     @api required = false;
-    @api label = 'Subject';
+    @api label = '';
     @api pillsIcon = '';
     @api name;
     @api readonly = false;
-    @api autocomplete = 'off'
-    @api dropdownAlignment = 'left';
+    @api autocomplete = CONSTANTS.OFF;
+    @api dropdownAlignment = CONSTANTS.ALIGNMENT_LEFT;
     @api messageWhenValueMissing;
     
     searchedText = '';
@@ -35,9 +25,9 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     
     _helpMessage;
     _variant;
-    _inputIcon = 'utility:search'
+    _inputIcon = CONSTANTS.SEARCH_ICON;
     _multiselect = false;
-    _dropdownHeight = 'standard';
+    _dropdownHeight = CONSTANTS.STANDATD;
     _dropdownVisible = false;
     _sort = false;
     _showValues = false;
@@ -66,7 +56,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     }
 
     set value(val) {
-        this._pendingValue = Array.isArray(val) ? val : (typeof val === 'string' ? [val] : []);
+        this._pendingValue = Array.isArray(val) ? val : (typeof val === CONSTANTS.STRING ? [val] : []);
         this.validateValue();
     }
 
@@ -76,6 +66,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
 
     set options(val) {
         this._options = this.sortOptions(JSON.parse(JSON.stringify(val || [])));
+        // validate
         this.tempOptions =  this.reorderOptions(this._options);
         this.validateValue();
     }
@@ -86,7 +77,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
 
     set allowSearch(val) {
         this._search = utils.normalizeBoolean(val);
-        this._inputIcon = this._search ? "utility:search" : "utility:down";
+        this._inputIcon = this._search ? CONSTANTS.SEARCH_ICON : CONSTANTS.DOWN_ICON;
     }
 
     @api get sort() {
@@ -137,8 +128,8 @@ export default class MultiselectSearchableCombobox extends LightningElement {
 
     set dropdownHeight(height) {
         this._dropdownHeight = utils.normalizeString(height, {
-            fallbackValue: 'standard',
-            validValues: ['standard', 'small']
+            fallbackValue: CONSTANTS.STANDATD,
+            validValues: [CONSTANTS.STANDATD, CONSTANTS.SMALL]
         });
     }
 
@@ -187,7 +178,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
             const helpText = this.template.querySelector('[data-help-text]');
             describedByElements.push(helpText);
         }
-        if (typeof this.ariaDescribedBy === 'string') {
+        if (typeof this.ariaDescribedBy === CONSTANTS.STRING) {
             describedByElements.push(this.ariaDescribedBy);
         }
         const ariaValues = [];
@@ -210,7 +201,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
     }
 
     get placeholder () {
-        return this._dropdownVisible ? "Type to Search" : "Select an Option";
+        return this._dropdownVisible ? CONSTANTS.SEARCH_PLACEHOLDER : CONSTANTS.SELECT_PLACEHOLDER;
     }
 
     // Handles the setting up the place holder for the combobox input
@@ -220,7 +211,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         }
         if (!this.value) return '';
         if (this._value.length === 1) return this.selectedOptions[0].label;
-        if (this._value.length > 1) return this._value.length + ' options selected';
+        if (this._value.length > 1) return format(CONSTANTS.OPTIONS_SELECTED, {num: this._value.length});
         return '';
     }
 
@@ -276,13 +267,13 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         let dropdownLengthClass = '';
 
         if (this._dropdownVisible) {
-            if (this.dropdownHeight === 'standard') {
-                if (window.innerHeight <= VIEWPORT_HEIGHT_SMALL) {
+            if (this.dropdownHeight === CONSTANTS.STANDATD) {
+                if (window.innerHeight <= CONSTANTS.VIEWPORT_HEIGHT_SMALL) {
                     dropdownLengthClass = 'slds-dropdown_length-with-icon-7';
                 } else {
                     dropdownLengthClass = 'slds-dropdown_length-with-icon-10';
                 }
-            } else if (this.dropdownHeight === 'small') {
+            } else if (this.dropdownHeight === CONSTANTS.SMALL) {
                 dropdownLengthClass = 'slds-dropdown_length-with-icon-5';
             }
         }
@@ -292,14 +283,14 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         )
             .add({
                 'slds-dropdown_left':
-                    alignment === 'left' || alignment === 'auto',
-                'slds-dropdown_center': alignment === 'center',
-                'slds-dropdown_right': alignment === 'right',
-                'slds-dropdown_bottom': alignment === 'bottom-center',
+                    alignment === CONSTANTS.ALIGNMENT_LEFT || alignment === CONSTANTS.ALIGNMENT_AUTO,
+                'slds-dropdown_center': alignment === CONSTANTS.ALIGNMENT_CENTER,
+                'slds-dropdown_right': alignment === CONSTANTS.ALIGNMENT_RIGHT,
+                'slds-dropdown_bottom': alignment === CONSTANTS.ALIGNMENT_BOTTOM_CENTER,
                 'slds-dropdown_bottom slds-dropdown_right slds-dropdown_bottom-right':
-                    alignment === 'bottom-right',
+                    alignment === CONSTANTS.ALIGNMENT_BOTTOM_RIGHT,
                 'slds-dropdown_bottom slds-dropdown_left slds-dropdown_bottom-left':
-                    alignment === 'bottom-left'
+                    alignment === CONSTANTS.ALIGNMENT_BOTTOM_LEFT
             })
             .toString();
     }
@@ -346,7 +337,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
 
     /*** EVENT HANDLERS ***/
     handleChange(event) {
-        if (EXCLUDE_KEYS.includes(event.key) || !event.target.value?.trim() ) return;
+        if (CONSTANTS.EXCLUDE_KEYS.includes(event.key) || !event.target.value?.trim() ) return;
         this.searchedText = event.target.value;
         this.allowHighlight();
         this.tempOptions =  this.searchedText ? 
@@ -666,10 +657,10 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         const label = this.template.querySelector('label');
         if (input) {
             utils.synchronizeAttrs(input, {
-                [ARIA_LABELLEDBY]: this.inputLabelledById,
-                [ARIA_DESCRIBEDBY]: this.computedAriaDescribedBy,
-                [ARIA_ACTIVEDESCENDANT]: this._activeElementDomId,
-                [ARIA_LABEL]: this.inputLabel
+                [CONSTANTS.ARIA_LABELLEDBY]: this.inputLabelledById,
+                [CONSTANTS.ARIA_DESCRIBEDBY]: this.computedAriaDescribedBy,
+                [CONSTANTS.ARIA_ACTIVEDESCENDANT]: this._activeElementDomId,
+                [CONSTANTS.ARIA_LABEL]: this.inputLabel
             });
             if(!label) return;
             utils.synchronizeAttrs(label, {
