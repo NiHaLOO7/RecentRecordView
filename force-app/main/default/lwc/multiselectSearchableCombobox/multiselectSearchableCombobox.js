@@ -211,7 +211,7 @@ export default class MultiselectSearchableCombobox extends LightningElement {
         }
         if (!this.value) return '';
         if (this._value.length === 1) return this.selectedOptions[0].label;
-        if (this._value.length > 1) return format(CONSTANTS.OPTIONS_SELECTED, {num: this._value.length});
+        if (this._value.length > 1) return CONSTANTS.OPTIONS_SELECTED.replace('{num}', this._value.length);
         return '';
     }
 
