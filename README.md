@@ -137,7 +137,7 @@ handleSelectedOption(event) {
 
 ## 🛠️ TODO / Enhancements
 - Grouping & Sections
-- Remote filtering (server-side)
+- Lazy search & Lazy loading
 - Infinite scroll / virtual list
 
 ---
