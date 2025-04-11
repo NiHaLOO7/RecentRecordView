@@ -66,30 +66,34 @@ defaultSkills = ['lwc', 'javascript'];
 
 ## ⚙️ Component Attributes
 
-| Attribute Name          | Type    | Description                                                                 |
-|-------------------------|---------|-----------------------------------------------------------------------------|
-| `name`                  | String  | Name of the input field (used in forms)                                     |
-| `label`                 | String  | Label displayed above the combobox                                          |
-| `placeholder`           | String  | Placeholder text inside the input                                           |
-| `options`               | Array   | Array of option objects: `{ label: String, value: String }`                |
-| `value`                 | String  | The pre-selected value, or semicolon-separated list of selected values for multiselect |
-| `required`              | Boolean | Whether the field is required                                               |
-| `readonly`              | Boolean | Makes the input read-only                                                   |
-| `disabled`              | Boolean | Disables the entire combobox                                                |
-| `pills-icon`            | String  | Icon shown in each selected pill (e.g. `utility:user`)                      |
-| `show-values`           | Boolean | Shows the `value` under the label inside the dropdown                       |
-| `field-level-help`      | String  | Help text shown next to the label                                           |
-| `autocomplete`          | String  | Native input autocomplete behavior (`on` / `off`)                           |
-| `dropdown-alignment`    | String  | Specifies the dropdown alignment, such as `left`, `right`, etc.             |
-| `message-when-value-missing` | String | Error message when the value is missing and the field is required         |
-| `allow-search`          | Boolean | Whether to allow search functionality within the combobox                   |
-| `sort`                  | Boolean | Whether to sort the dropdown options alphabetically                         |
-| `multiselect`           | Boolean | Specifies whether the combobox supports multiple selections                |
-| `variant`               | String  | Variant to define the appearance of the combobox (`standard`, `label-hidden`, `label-inline`) |
-| `dropdown-height`       | String  | Specifies the height of the dropdown                                        |
-| `aria-labelledby`       | String  | ARIA label attribute to associate with the combobox                         |
 
----           |         |
+| Attribute Name          | Type    | Description                                                                 | Required | Default           |
+|-------------------------|---------|-----------------------------------------------------------------------------|----------|-------------------|
+| `name`                  | String  | Name of the input field (used in forms)                                     | No       | -                 |
+| `label`                 | String  | Label displayed above the combobox                                          | No      | -                 |
+| `options`               | Array   | Array of option objects: `{ label: String, value: String }`                | Yes      | -                 |
+| `selected-options`      | Array   | Array of pre-selected value strings                                         | No       | []                |
+| `required`              | Boolean | Whether the field is required                                               | No       | false             |
+| `readonly`              | Boolean | Makes the input read-only                                                   | No       | false             |
+| `disabled`              | Boolean | Disables the entire combobox                                                | No       | false             |
+| `pills-icon`            | String  | Icon shown in each selected pill (e.g. `utility:user`)                      | No       | -                 |
+| `show-values`           | Boolean | Shows the `value` under the label inside the dropdown                       | No       | false             |
+| `field-level-help`      | String  | Help text shown next to the label                                           | No       | -                 |
+| `autocomplete`          | String  | Native input autocomplete behavior (`on` / `off`)                           | No       | off               |
+| `dropdown-alignment`    | String  | Defines the alignment of the dropdown (`left` / `right` / `center`)        | No       | left              |
+| `input-icon`            | String  | Custom icon shown inside the input field (`utility:search`, etc.)           | No       | -                 |
+| `pills`                 | Boolean | Whether to display pills below the input for selected options               | No       | false             |
+| `input-value`           | String  | Current input value (useful for default text or custom search logic)       | No       | -                 |
+| `value`                 | String  | Default or pre-populated selected value(s)                                  | No       | -                 |
+| `allow-search`          | Boolean | Enables or disables the search functionality                                | No       | true              |
+| `sort`                  | Boolean | Whether to sort the options in alphabetical order                           | No       | false             |
+| `multiselect`           | Boolean | Allows multiple selections if set to true                                   | No       | false             |
+| `disabled`              | Boolean | If true, the combobox will be disabled                                      | No       | false             |
+| `variant`               | String  | The variant changes the appearance of the combobox (`standard`, `label-hidden`, `label-inline`) | No | standard |
+| `dropdown-height`       | String  | Height of the dropdown list (e.g., '200px')                                 | No       | auto              |
+| `aria-labelledby`       | String  | ARIA label for accessibility                                               | No       | -                 |
+
+---
 
 ### Supported Events
 
