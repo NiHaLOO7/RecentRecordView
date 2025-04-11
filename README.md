@@ -36,9 +36,9 @@ To use the component in your Salesforce LWC project, simply import the necessary
 <c-multiselect-searchable-combobox
     name="techSkills"
     label="Select Your Skills"
-    placeholder="Search skills..."
     options={skillsList}
-    selected-options={defaultSkills}
+    value={defaultSkills}
+    onchange={handleSelectionChange}
     required
     pills-icon="utility:check"
     show-values
