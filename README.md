@@ -17,7 +17,7 @@ This component is inspired by the **LWC Base Combobox Implementation** ([Salesfo
 ## Demo
 
 ### 1. Single Select without Search
-![Single Select without Search Image](/assets/Single_Select_without_Search.gif)
+![Single Select without Search Image](/assets/SingleSelect_without_Search.gif)
 
 ### 2. Multiselect without Search
 ![Multiselect without Search Image](/assets/Multiselect_without_search.gif)
@@ -26,7 +26,7 @@ This component is inspired by the **LWC Base Combobox Implementation** ([Salesfo
 ![Single Select with Search Image](/assets/Singleselect_with_Search.gif)
 
 ### 4. Multiselect with Search
-![Multiselect with Search Image](/assets/Multiselect_with_Search.png)
+![Multiselect with Search Image](/assets/Multiselect_with_Search.gif)
 
 ## Usage
 
