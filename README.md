@@ -23,10 +23,10 @@ This component is inspired by the **LWC Base Combobox Implementation** ([Salesfo
 ![Multiselect without Search Image](/assets/Multiselect_without_search.gif)
 
 ### 3. Single Select with Search
-![Single Select with Search Image](/assets/Single_Select_with_Search.gif)
+![Single Select with Search Image](/assets/Singleselect_with_Search.gif)
 
 ### 4. Multiselect with Search
-![Multiselect with Search Image](/assets/Multiselect_with_Search.gif)
+![Multiselect with Search Image](/assets/Multiselect_with_Search.png)
 
 ## Usage
 
