@@ -34,34 +34,62 @@ To use the component in your Salesforce LWC project, simply import the necessary
 
 ```html
 <c-multiselect-searchable-combobox
+    name="techSkills"
     label="Select Your Skills"
+    placeholder="Search skills..."
     options={skillsList}
     selected-options={defaultSkills}
-    pills-icon="utility:check"
     required
+    pills-icon="utility:check"
     show-values
-    field-level-help="Choose the skills you are proficient in."
+    field-level-help="Choose all skills you are proficient in."
     pills
+    allow-search
+    multiselect
 ></c-multiselect-searchable-combobox>
+```
+
+### 2. **Define `options` in JavaScript**
+
+```js
+skillsList = [
+    { label: 'Apex', value: 'apex' },
+    { label: 'LWC', value: 'lwc' },
+    { label: 'JavaScript', value: 'javascript' },
+    { label: 'SOQL', value: 'soql' }
+];
+
+defaultSkills = ['lwc', 'javascript'];
 ```
 
 ### Supported Attributes
 
-| Attribute             | Mandatory | Description                                                                                             | Default |
-|-----------------------|-----------|---------------------------------------------------------------------------------------------------------|---------|
-| `label`               | Yes       | Specifies the label text for the combobox.                                                              |         |
-| `options`             | Yes       | An array of objects containing `label` and `value` pairs for dropdown options.                          |         |
-| `selected-options`    | No        | An array of pre-selected option values (useful for default selection).                                   |         |
-| `multiselect`         | No        | If set to `true`, allows multiple selections; otherwise, single selection is enabled.                   | `false` |
-| `autocomplete`        | No        | If set to `true`, enables search/autocomplete functionality.                                            | `false` |
-| `required`            | No        | Makes the combobox field mandatory.                                                                     | `false` |
-| `readonly`            | No        | Makes the combobox field read-only.                                                                     | `false` |
-| `disabled`            | No        | Disables the entire combobox.                                                                           | `false` |
-| `pills`               | No        | If set to `true`, displays selected options as pills below the input.                                    | `false` |
-| `input-value`         | No        | Specifies the input value for the combobox. Useful for default or custom search logic.                   |         |
-| `placeholder`         | No        | Displays a placeholder inside the combobox when no value is selected.                                   |         |
-| `field-level-help`    | No        | Displays help text next to the label, in the format of a tooltip.                                       |         |
-| `validation`          | No        | Custom validation rules for the combobox input. See **Validation** section for more details.             |         |
+## ⚙️ Component Attributes
+
+| Attribute Name          | Type    | Description                                                                 |
+|-------------------------|---------|-----------------------------------------------------------------------------|
+| `name`                  | String  | Name of the input field (used in forms)                                     |
+| `label`                 | String  | Label displayed above the combobox                                          |
+| `placeholder`           | String  | Placeholder text inside the input                                           |
+| `options`               | Array   | Array of option objects: `{ label: String, value: String }`                |
+| `value`                 | String  | The pre-selected value, or semicolon-separated list of selected values for multiselect |
+| `required`              | Boolean | Whether the field is required                                               |
+| `readonly`              | Boolean | Makes the input read-only                                                   |
+| `disabled`              | Boolean | Disables the entire combobox                                                |
+| `pills-icon`            | String  | Icon shown in each selected pill (e.g. `utility:user`)                      |
+| `show-values`           | Boolean | Shows the `value` under the label inside the dropdown                       |
+| `field-level-help`      | String  | Help text shown next to the label                                           |
+| `autocomplete`          | String  | Native input autocomplete behavior (`on` / `off`)                           |
+| `dropdown-alignment`    | String  | Specifies the dropdown alignment, such as `left`, `right`, etc.             |
+| `message-when-value-missing` | String | Error message when the value is missing and the field is required         |
+| `allow-search`          | Boolean | Whether to allow search functionality within the combobox                   |
+| `sort`                  | Boolean | Whether to sort the dropdown options alphabetically                         |
+| `multiselect`           | Boolean | Specifies whether the combobox supports multiple selections                |
+| `variant`               | String  | Variant to define the appearance of the combobox (`standard`, `label-hidden`, `label-inline`) |
+| `dropdown-height`       | String  | Specifies the height of the dropdown                                        |
+| `aria-labelledby`       | String  | ARIA label attribute to associate with the combobox                         |
+
+---           |         |
 
 ### Supported Events
 
@@ -82,7 +110,10 @@ To use the component in your Salesforce LWC project, simply import the necessary
    }
    ```
 
-## Validation
+## 🧪 Testing & Validation
+
+Supports all basic field validation and integrates with form submissions. Follows Lightning design principles and best practices.
+
 
 
 ### Validation through `setCustomValidity` method:
@@ -99,6 +130,11 @@ handleSelectedOption(event) {
     }
 }
 ```
+
+## 🛠️ TODO / Enhancements
+- Grouping & Sections
+- Remote filtering (server-side)
+- Infinite scroll / virtual list
 
 ---
 
