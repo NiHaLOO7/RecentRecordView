@@ -17,10 +17,10 @@ This component is inspired by the **LWC Base Combobox Implementation** ([Salesfo
 ## Demo
 
 ### 1. Single Select without Search
-![Single Select without Search Image](/assets/SingleSelect_without_Search.gif)
+![Single Select without Search Image](/assets/Singleselect_without_Search.gif)
 
 ### 2. Multiselect without Search
-![Multiselect without Search Image](/assets/Multiselect_without_search.gif)
+![Multiselect without Search Image](/assets/Multiselect_without_Search.gif)
 
 ### 3. Single Select with Search
 ![Single Select with Search Image](/assets/Singleselect_with_Search.gif)
